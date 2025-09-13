@@ -1,0 +1,112 @@
+.ad-plan-list {
+  padding: 20px;
+  background-color: #f5f5f5;
+}
+
+.ad-plan-list-container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ad-plan-list-title {
+  margin: 0 0 20px 0;
+  color: #333;
+  font-size: 18px;
+}
+
+.ad-plan-table-container {
+  overflow-x: auto;
+}
+
+.ad-plan-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.ad-plan-table thead tr {
+  background-color: #f8f9fa;
+}
+
+.ad-plan-table th {
+  padding: 12px 8px;
+  border: 1px solid #dee2e6;
+  text-align: left;
+  min-width: 60px;
+  font-weight: 500;
+}
+
+.ad-plan-table td {
+  padding: 12px 8px;
+  border: 1px solid #dee2e6;
+}
+
+.ad-plan-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.ad-plan-status-badge {
+  padding: 2px 8px;
+  color: white;
+  border-radius: 12px;
+  font-size: 11px;
+}
+
+.ad-plan-status-badge--active {
+  background-color: #52c41a;
+}
+
+.ad-plan-status-badge--inactive {
+  background-color: #f5222d;
+}
+
+.ad-plan-pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #666;
+  font-size: 14px;
+}
+
+.ad-plan-pagination-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.ad-plan-pagination-button {
+  padding: 6px 12px;
+  border: 1px solid #d9d9d9;
+  background-color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ad-plan-pagination-button:hover {
+  border-color: #1890ff;
+  color: #1890ff;
+}
+
+.ad-plan-pagination-current {
+  padding: 6px 12px;
+}
+
+@media (max-width: 768px) {
+  .ad-plan-table {
+    font-size: 10px;
+  }
+
+  .ad-plan-table th,
+  .ad-plan-table td {
+    padding: 6px 4px;
+    min-width: 50px;
+  }
+
+  .ad-plan-pagination {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
