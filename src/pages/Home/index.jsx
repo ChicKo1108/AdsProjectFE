@@ -5,7 +5,10 @@ import { Cost, Yuan, Manage } from './icon.jsx';
 import { Link } from 'react-router-dom';
 import Navigation from '../../components/Navigation/index.jsx';
 import { getHomeInfo } from '../../apis';
-import { AD_CREATIVES_TABLE_COLUMNS, AD_PLAN_TABLE_COLUMNS } from '../../utils/constants';
+import {
+  AD_CREATIVES_TABLE_COLUMNS,
+  AD_PLAN_TABLE_COLUMNS,
+} from '../../utils/constants';
 
 function Home() {
   const [accountInfo, setAccount] = useState({});
@@ -45,11 +48,14 @@ function Home() {
 
         {/* 广告计划列表 */}
         <div className="home-section">
-          <h3><Link to="/adPlan">广告计划 &gt;</Link></h3>
+          <h3>
+            <Link to="/adPlan">广告计划 &gt;</Link>
+          </h3>
           <Table
             dataSource={adPlans}
             pagination={false}
             size="small"
+            rowKey="id"
             loading={loading}
             scroll={{ x: 1200 }}
             columns={AD_PLAN_TABLE_COLUMNS}
@@ -58,10 +64,13 @@ function Home() {
 
         {/* 广告创意列表 */}
         <div className="home-section">
-          <h3><Link to="/adCreative">广告创意 &gt;</Link></h3>
+          <h3>
+            <Link to="/adCreative">广告创意 &gt;</Link>
+          </h3>
           <Table
             dataSource={adCreatives}
             pagination={false}
+            rowKey="id"
             size="small"
             scroll={{ x: 1200 }}
             columns={AD_CREATIVES_TABLE_COLUMNS}

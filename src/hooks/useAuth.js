@@ -59,12 +59,7 @@ export function useAuth() {
   // 获取用户显示名称
   const getDisplayName = () => {
     if (!isLoggedIn) return '';
-    return userInfo.name || userInfo.email || '未知用户';
-  };
-
-  // 快速登录（用于演示）
-  const quickLogin = async (username = '演示用户') => {
-    return await login({ username, email: `${username}@demo.com` });
+    return userInfo.name || '未知用户';
   };
 
   return {
@@ -80,7 +75,6 @@ export function useAuth() {
     updateUserInfo,
     clearError,
     initializeUser,
-    quickLogin,
 
     // 工具函数
     hasPermission,

@@ -1,5 +1,9 @@
 import React, { createContext, useContext, useReducer } from 'react';
-import { login as apiLogin, logout as apiLogout, validateToken } from '../apis/auth';
+import {
+  login as apiLogin,
+  logout as apiLogout,
+  validateToken,
+} from '../apis/auth';
 import { config, logger } from '../config';
 import { USER_ROLE } from '../utils/constants';
 import { message } from 'antd';
@@ -90,15 +94,15 @@ export function UserProvider({ children }) {
   // Action creators
   const actions = {
     // 登录
-    login: async (credentials) => {
+    login: async credentials => {
       dispatch({ type: USER_ACTIONS.LOGIN_START });
       logger.info('开始登录:', credentials.username);
 
       const { token, userInfo } = await apiLogin(credentials);
-      
+
       dispatch({
         type: USER_ACTIONS.LOGIN_SUCCESS,
-        payload: userInfo
+        payload: userInfo,
       });
 
       // 保存到localStorage
@@ -120,7 +124,7 @@ export function UserProvider({ children }) {
 
       // 清除本地状态
       dispatch({ type: USER_ACTIONS.LOGOUT });
-      
+
       localStorage.removeItem('userInfo');
       localStorage.removeItem('token');
     },
@@ -152,18 +156,20 @@ export function UserProvider({ children }) {
         const userData = JSON.parse(savedUser);
 
         // 验证token是否有效
-        const tokenValidation = await validateToken().catch(() => ({ success: false }));
+        const tokenValidation = await validateToken().catch(() => ({
+          success: false,
+        }));
 
         if (tokenValidation.valid) {
           dispatch({
             type: USER_ACTIONS.LOGIN_SUCCESS,
-            payload: userData
+            payload: userData,
           });
           logger.info('用户状态恢复成功:', userData.name);
           message.success(`欢迎回来，${userData.name}`, 3);
         } else {
           // Token无效，清除本地数据
-          
+
           logger.warn('Token无效，清除本地用户数据');
           localStorage.removeItem('userInfo');
           localStorage.removeItem('token');

@@ -1,0 +1,194 @@
+.dashboard-container {
+  padding: 24px;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.dashboard-header h2 {
+  margin: 0;
+  color: #262626;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.statistic-card {
+  position: relative;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+.statistic-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.statistic-card .ant-statistic {
+  padding: 8px 0;
+}
+
+.statistic-card .ant-statistic-title {
+  font-size: 14px;
+  color: #8c8c8c;
+  margin-bottom: 8px;
+}
+
+.statistic-card .ant-statistic-content {
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.statistic-icon {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font-size: 24px;
+  opacity: 0.6;
+}
+
+.budget-info-card,
+.account-status-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.budget-item,
+.status-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.budget-item:last-child,
+.status-item:last-child {
+  border-bottom: none;
+}
+
+.budget-label,
+.status-label {
+  font-size: 14px;
+  color: #595959;
+  font-weight: 500;
+}
+
+.budget-value,
+.status-value {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.budget-value.positive {
+  color: #52c41a;
+}
+
+.budget-value.negative {
+  color: #f5222d;
+}
+
+.budget-value.over-budget {
+  color: #f5222d;
+  font-weight: 700;
+}
+
+.budget-value.normal {
+  color: #1890ff;
+}
+
+.status-value.active {
+  color: #52c41a;
+}
+
+.status-value.inactive {
+  color: #f5222d;
+}
+
+.budget-warning {
+  padding: 12px;
+  background-color: #fff7e6;
+  border: 1px solid #ffd591;
+  border-radius: 6px;
+  color: #d46b08;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  margin-top: 8px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 16px;
+  }
+  
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .statistic-card .ant-statistic-content {
+    font-size: 24px;
+  }
+  
+  .statistic-icon {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-header h2 {
+    font-size: 20px;
+  }
+  
+  .statistic-card .ant-statistic-content {
+    font-size: 20px;
+  }
+  
+  .budget-value,
+  .status-value {
+    font-size: 14px;
+  }
+}
+
+/* 动画效果 */
+.statistic-card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 表单样式优化 */
+.ant-modal .ant-form-item-label > label {
+  font-weight: 500;
+  color: #262626;
+}
+
+.ant-input-number {
+  border-radius: 6px;
+}
+
+.ant-input-number:hover {
+  border-color: #40a9ff;
+}
+
+.ant-input-number:focus,
+.ant-input-number-focused {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}

@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { config, logger } from '../config';
-import { message } from 'antd';
 
 // 创建axios实例
 const request = axios.create({
@@ -13,7 +12,7 @@ const request = axios.create({
 
 // 请求拦截器
 request.interceptors.request.use(
-  (config) => {
+  config => {
     // 从localStorage获取token
     const token = localStorage.getItem('token');
 
@@ -34,7 +33,7 @@ request.interceptors.request.use(
 
     return config;
   },
-  (error) => {
+  error => {
     logger.error('Request interceptor error:', error);
     return Promise.reject(error);
   }
@@ -42,7 +41,7 @@ request.interceptors.request.use(
 
 // 响应拦截器
 request.interceptors.response.use(
-  (response) => {
+  response => {
     // 记录响应信息
     logger.debug('API Response:', {
       status: response.status,
@@ -61,24 +60,23 @@ request.interceptors.response.use(
     } else {
       const errorMessage = data.message || '请求失败';
       logger.warn('Business logic error:', errorMessage);
-      message.error(errorMessage);
-      return Promise.reject(new Error(errorMessage));
+      window.dispatchEvent(new CustomEvent('popMsg', { detail: errorMessage }));
+      return Promise.reject();
     }
-
   },
-  (error) => {
+  error => {
     logger.error('Response interceptor error:', error);
 
     // 处理HTTP状态码错误
     if (error.response) {
-      const { status, data } = error.response;
+      const { status, data } = error.response;   
       let errorMessage = '请求失败';
 
       switch (status) {
         case 401:
           errorMessage = '未授权，请重新登录';
           // 清除本地存储的用户信息和token
-          
+
           localStorage.removeItem('token');
           localStorage.removeItem('userInfo');
           // 重定向到登录页面
@@ -106,19 +104,19 @@ request.interceptors.response.use(
           errorMessage = data?.message || `请求失败 (${status})`;
       }
 
-      message.error(errorMessage);
-      return Promise.reject(new Error(errorMessage));
+      window.dispatchEvent(new CustomEvent('popMsg', { detail: data?.message || errorMessage }));
+      return Promise.reject();
     } else if (error.request) {
       // 网络错误
       const errorMessage = '网络连接失败，请检查网络设置';
       logger.error('Network error:', error.request);
-      message.error(errorMessage);
-      return Promise.reject(new Error(errorMessage));
+      window.dispatchEvent(new CustomEvent('popMsg', { detail: data?.message || errorMessage }));
+      return Promise.reject();
     } else {
       // 其他错误
       const errorMessage = error.message || '未知错误';
       logger.error('Unknown error:', error.message);
-      message.error(errorMessage);
+      window.dispatchEvent(new CustomEvent('popMsg', { detail: data?.message || errorMessage }));
       return Promise.reject(error);
     }
   }
@@ -146,19 +144,21 @@ export const upload = (url, formData, onUploadProgress) => {
 
 // 下载文件方法
 export const download = (url, filename, config) => {
-  return request.get(url, {
-    ...config,
-    responseType: 'blob',
-  }).then(response => {
-    // 创建下载链接
-    const blob = new Blob([response]);
-    const downloadUrl = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = downloadUrl;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(downloadUrl);
-  });
+  return request
+    .get(url, {
+      ...config,
+      responseType: 'blob',
+    })
+    .then(response => {
+      // 创建下载链接
+      const blob = new Blob([response]);
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+    });
 };

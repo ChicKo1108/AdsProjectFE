@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { App as AntdApp } from 'antd';
 import { UserProvider } from './contexts/UserContext';
 import Navigation from './components/Navigation';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -16,7 +17,7 @@ import './App.css';
 function AppLayout() {
   const location = useLocation();
   const isLoginPage = location.pathname === '/login';
-  const isAdminPage = location.pathname === '/admin';
+  const isAdminPage = location.pathname.startsWith('/admin');
   
   return (
     <div className="App">
@@ -24,7 +25,7 @@ function AppLayout() {
       <main style={{ padding: (isLoginPage || isAdminPage) ? '0' : '0' }}>
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/admin" element={
+          <Route path="/admin/*" element={
             <ProtectedRoute>
               <Admin />
             </ProtectedRoute>
@@ -57,6 +58,17 @@ function AppLayout() {
 }
 
 function App() {
+  const { message } = AntdApp.useApp();
+  useEffect(() => {
+    const errMsgEvent = (e) => {
+      message.error(e.detail || 'Something Wrong!');
+    };
+    window.addEventListener('popMsg', errMsgEvent);
+    return () => {
+      window.removeEventListener('popMsg', errMsgEvent);
+    };
+  }, []);
+
   return (
     <UserProvider>
       <Router>

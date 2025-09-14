@@ -16,6 +16,10 @@
   font-size: 18px;
 }
 
+.ad-plan-list-search {
+  margin-left: 20px;
+}
+
 .ad-plan-table-container {
   overflow-x: auto;
 }

@@ -13,14 +13,14 @@ const AD_PLAN_FIELDS = {
     web: '网页推广',
     quick_app: '快应用推广',
     mini_app: '小程序推广',
-    download: '应用下载'
+    download: '应用下载',
   },
 
   // 竞价策略（更新后的枚举值）
   PRICE_STRATEGY: {
     stable_cost: '稳定成本',
     max_conversion: '最大转化',
-    optimal_cost: '最优成本'
+    optimal_cost: '最优成本',
   },
 
   STATUS: {
@@ -28,8 +28,8 @@ const AD_PLAN_FIELDS = {
     1: '已发布',
     2: '已暂停',
     3: '已结束',
-  }
-}
+  },
+};
 
 const TAG_COLOR = {
   0: 'orange',
@@ -40,7 +40,7 @@ const TAG_COLOR = {
   5: 'purple',
   6: 'white',
   7: 'default',
-}
+};
 
 export const AD_PLAN_TABLE_COLUMNS = [
   {
@@ -67,14 +67,14 @@ export const AD_PLAN_TABLE_COLUMNS = [
         web: 'green',
         quick_app: 'orange',
         mini_app: 'purple',
-        download: 'cyan'
+        download: 'cyan',
       };
       return (
         <Tag color={targetColors[target] || 'default'}>
           {AD_PLAN_FIELDS.TARGET[target]}
         </Tag>
       );
-    }
+    },
   },
   {
     title: '竞价策略',
@@ -85,14 +85,14 @@ export const AD_PLAN_TABLE_COLUMNS = [
       const strategyColors = {
         stable_cost: 'geekblue',
         max_conversion: 'volcano',
-        optimal_cost: 'gold'
+        optimal_cost: 'gold',
       };
       return (
         <Tag color={strategyColors[priceStratagy] || 'default'}>
           {AD_PLAN_FIELDS.PRICE_STRATEGY[priceStratagy]}
         </Tag>
       );
-    }
+    },
   },
   {
     title: '投放类型',
@@ -151,7 +151,7 @@ export const AD_PLAN_TABLE_COLUMNS = [
     title: '点击均价',
     dataIndex: 'click_per_price',
     key: 'click_per_price',
-    width: 70,
+    width: 80,
   },
   {
     title: '点击率',
@@ -170,7 +170,7 @@ export const AD_PLAN_TABLE_COLUMNS = [
     title: '下载均价',
     dataIndex: 'download_per_count',
     key: 'download_per_count',
-    width: 70,
+    width: 80,
   },
   {
     title: '下载率',
@@ -179,7 +179,7 @@ export const AD_PLAN_TABLE_COLUMNS = [
     width: 60,
     render: rate => `${rate}%`,
   },
-]
+];
 
 export const AD_CREATIVES_TABLE_COLUMNS = [
   {
@@ -200,12 +200,11 @@ export const AD_CREATIVES_TABLE_COLUMNS = [
     dataIndex: 'status',
     key: 'status',
     width: 80,
-    render: (status) => (
+    render: status => (
       <span
         style={{
           padding: '2px 8px',
-          backgroundColor:
-            status ? '#52c41a' : '#f5222d',
+          backgroundColor: status ? '#52c41a' : '#f5222d',
           color: 'white',
           borderRadius: '12px',
           fontSize: '11px',
@@ -277,4 +276,4 @@ export const AD_CREATIVES_TABLE_COLUMNS = [
     width: 70,
     render: rate => `${rate}%`,
   },
-]
+];
