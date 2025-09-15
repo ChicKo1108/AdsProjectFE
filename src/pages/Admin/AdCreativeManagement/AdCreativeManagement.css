@@ -1,11 +1,11 @@
-.ad-plan-header {
+.ad-creative-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
 }
 
-.ad-plan-header h2 {
+.ad-creative-header h2 {
   margin: 0;
   color: #262626;
   font-size: 24px;
@@ -17,18 +17,18 @@
   align-items: center;
 }
 
-.plan-name {
+.creative-name {
   font-weight: 500;
   color: #1890ff;
   cursor: pointer;
 }
 
-.plan-name:hover {
+.creative-name:hover {
   color: #40a9ff;
 }
 
 /* 详情弹窗样式 */
-.plan-detail {
+.creative-detail {
   padding: 16px 0;
 }
 
@@ -132,19 +132,36 @@
   background: none;
 }
 
+/* 开关状态样式 */
+.status-badge {
+  padding: 2px 8px;
+  color: white;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.status-badge.active {
+  background-color: #52c41a;
+}
+
+.status-badge.inactive {
+  background-color: #f5222d;
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .ad-plan-management {
+  .ad-creative-management {
     padding: 16px;
   }
   
-  .ad-plan-header {
+  .ad-creative-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
   }
   
-  .ad-plan-header h2 {
+  .ad-creative-header h2 {
     font-size: 20px;
   }
   
@@ -159,7 +176,7 @@
 }
 
 @media (max-width: 576px) {
-  .ad-plan-header h2 {
+  .ad-creative-header h2 {
     font-size: 18px;
   }
   
@@ -175,7 +192,7 @@
 }
 
 /* 动画效果 */
-.ad-plan-management {
+.ad-creative-management {
   animation: fadeInUp 0.6s ease-out;
 }
 
@@ -240,40 +257,57 @@
   background: #a8a8a8;
 }
 
-/* 标签颜色自定义 */
-.ant-tag-green {
-  background-color: #f6ffed;
-  border-color: #b7eb8f;
-  color: #52c41a;
+/* 统计数据分组样式 */
+.statistics-section {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
 }
 
-.ant-tag-orange {
-  background-color: #fff7e6;
-  border-color: #ffd591;
-  color: #fa8c16;
+.statistics-section h4 {
+  margin: 0 0 16px 0;
+  color: #262626;
+  font-size: 16px;
+  font-weight: 600;
 }
 
-.ant-tag-blue {
-  background-color: #e6f7ff;
-  border-color: #91d5ff;
+/* Display ID 样式 */
+.display-id {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
   color: #1890ff;
+  background-color: #f0f8ff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #d6e4ff;
 }
 
-/* 输入框组合样式 */
-.ant-input-group {
-  border-radius: 6px;
+/* 数值显示样式 */
+.number-value {
+  font-weight: 600;
+  color: #262626;
 }
 
-.ant-input-group .ant-input {
-  border-radius: 0;
+.currency-value {
+  color: #52c41a;
+  font-weight: 600;
 }
 
-.ant-input-group .ant-input:first-child {
-  border-top-left-radius: 6px;
-  border-bottom-left-radius: 6px;
+.percentage-value {
+  color: #1890ff;
+  font-weight: 600;
 }
 
-.ant-input-group .ant-input:last-child {
-  border-top-right-radius: 6px;
-  border-bottom-right-radius: 6px;
+/* 表单分组样式 */
+.form-section {
+  margin-bottom: 24px;
+}
+
+.form-section-title {
+  margin: 0 0 16px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f0f0f0;
+  color: #262626;
+  font-size: 16px;
+  font-weight: 600;
 }

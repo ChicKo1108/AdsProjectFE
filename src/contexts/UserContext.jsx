@@ -98,19 +98,28 @@ export function UserProvider({ children }) {
       dispatch({ type: USER_ACTIONS.LOGIN_START });
       logger.info('开始登录:', credentials.username);
 
-      const { token, userInfo } = await apiLogin(credentials);
+      try {
+        const { token, userInfo } = await apiLogin(credentials);
 
-      dispatch({
-        type: USER_ACTIONS.LOGIN_SUCCESS,
-        payload: userInfo,
-      });
+        dispatch({
+          type: USER_ACTIONS.LOGIN_SUCCESS,
+          payload: userInfo,
+        });
 
-      // 保存到localStorage
-      localStorage.setItem('userInfo', JSON.stringify(userInfo));
-      localStorage.setItem('token', token);
+        // 保存到localStorage
+        localStorage.setItem('userInfo', JSON.stringify(userInfo));
+        localStorage.setItem('token', token);
 
-      logger.info('登录成功:', userInfo.name);
-      return { success: true };
+        logger.info('登录成功:', userInfo.name);
+        return { success: true };
+      } catch (error) {
+        logger.error('登录失败:', error);
+        dispatch({
+          type: USER_ACTIONS.LOGIN_FAILURE,
+          payload: '登录失败，请检查用户名和密码'
+        });
+        throw error; // 重新抛出错误，让调用方知道登录失败
+      }
     },
 
     // 退出登录
@@ -149,31 +158,44 @@ export function UserProvider({ children }) {
 
     // 初始化用户状态（从localStorage恢复）
     initializeUser: async () => {
-      const savedUser = localStorage.getItem('userInfo');
-      const token = localStorage.getItem('token');
+      dispatch({ type: USER_ACTIONS.LOGIN_START });
+      
+      try {
+        const savedUser = localStorage.getItem('userInfo');
+        const token = localStorage.getItem('token');
 
-      if (savedUser && token) {
-        const userData = JSON.parse(savedUser);
+        if (savedUser && token) {
+          const userData = JSON.parse(savedUser);
 
-        // 验证token是否有效
-        const tokenValidation = await validateToken().catch(() => ({
-          success: false,
-        }));
+          // 验证token是否有效
+          const tokenValidation = await validateToken().catch(() => ({
+            success: false,
+          }));
 
-        if (tokenValidation.valid) {
-          dispatch({
-            type: USER_ACTIONS.LOGIN_SUCCESS,
-            payload: userData,
-          });
-          logger.info('用户状态恢复成功:', userData.name);
-          message.success(`欢迎回来，${userData.name}`, 3);
+          if (tokenValidation.valid) {
+            dispatch({
+              type: USER_ACTIONS.LOGIN_SUCCESS,
+              payload: userData,
+            });
+            logger.info('用户状态恢复成功:', userData.name);
+            message.success(`欢迎回来，${userData.name}`, 3);
+          } else {
+            // Token无效，清除本地数据
+            logger.warn('Token无效，清除本地用户数据');
+            localStorage.removeItem('userInfo');
+            localStorage.removeItem('token');
+            dispatch({ type: USER_ACTIONS.LOGOUT });
+          }
         } else {
-          // Token无效，清除本地数据
-
-          logger.warn('Token无效，清除本地用户数据');
-          localStorage.removeItem('userInfo');
-          localStorage.removeItem('token');
+          // 没有保存的用户信息，设置为未登录状态
+          dispatch({ type: USER_ACTIONS.LOGOUT });
         }
+      } catch (error) {
+        logger.error('初始化用户状态失败:', error);
+        // 出错时清除本地数据
+        localStorage.removeItem('userInfo');
+        localStorage.removeItem('token');
+        dispatch({ type: USER_ACTIONS.LOGOUT });
       }
     },
   };

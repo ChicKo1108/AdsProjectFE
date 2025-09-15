@@ -11,6 +11,8 @@
   left: 0;
   top: 0;
   bottom: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .admin-logo {
@@ -63,6 +65,33 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   min-height: calc(100vh - 200px);
 }
+
+.admin-logo:hover {
+  background-color: #1890ff;
+}
+
+.admin-sider-footer {
+  padding: 16px;
+  border-top: 1px solid #303030;
+}
+
+.back-to-home-btn {
+  color: rgba(255, 255, 255, 0.85);
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 16px;
+  border-radius: 6px;
+  border: none !important;
+}
+
+.back-to-home-btn:hover {
+  color: #fff !important;
+  background-color: #1890ff;
+  border: none !important;
+}
+
 
 @media (max-width: 768px) {
   .admin-sider {

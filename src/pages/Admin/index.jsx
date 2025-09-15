@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Menu, Breadcrumb } from 'antd';
-import { UserOutlined, DashboardOutlined, AuditOutlined, ForkOutlined, FireOutlined } from '@ant-design/icons';
+import { Layout, Menu, Breadcrumb, Button } from 'antd';
+import { UserOutlined, DashboardOutlined, AuditOutlined, ForkOutlined, FireOutlined, HomeOutlined } from '@ant-design/icons';
 import { useNavigate, Routes, Route, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import UserManagement from './UserManagement';
 import Dashboard from './Dashboard';
 import AdPlanManagement from './AdPlanManagement';
+import AdCreativeManagement from './AdCreativeManagement';
+import AdGroupManagement from './AdGroupManagement';
 import './Admin.css';
 
 const { Sider, Content } = Layout;
@@ -169,8 +171,20 @@ function Admin() {
           items={menuItems}
           onClick={handleMenuClick}
           theme="dark"
-          style={{ borderRight: 0 }}
+          style={{ borderRight: 0, flex: 1 }}
         />
+        
+        <div className="admin-sider-footer">
+          <Button
+            type="text"
+            icon={<HomeOutlined />}
+            onClick={handleBackToMain}
+            className="back-to-home-btn"
+            block
+          >
+            返回首页
+          </Button>
+        </div>
       </Sider>
 
       <Layout>
@@ -189,9 +203,9 @@ function Admin() {
               } />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="ad-plans" element={<AdPlanManagement />} />
-              <Route path="ad-groups" element={<PlaceholderComponent title="广告组管理" />} />
-              <Route path="ad-creatives" element={<PlaceholderComponent title="广告创意管理" />} />
-              <Route path="" element={<PlaceholderComponent title="账户数据" />} />
+              <Route path="ad-groups" element={<AdGroupManagement />} />
+              <Route path="ad-creatives" element={<AdCreativeManagement />} />
+              <Route path="" element={<AdPlanManagement />} />
             </Routes>
           </div>
         </Content>

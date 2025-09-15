@@ -1,0 +1,409 @@
+.ad-group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.ad-group-header h2 {
+  margin: 0;
+  color: #262626;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.group-name {
+  font-weight: 500;
+  color: #1890ff;
+  cursor: pointer;
+}
+
+.group-name:hover {
+  color: #40a9ff;
+}
+
+/* 广告组卡片样式 */
+.ad-group-card {
+  margin-bottom: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+.ad-group-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.ad-group-card .ant-card-head {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 12px 16px;
+}
+
+.ad-group-card .ant-card-body {
+  padding: 16px;
+}
+
+.card-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80px;
+}
+
+.plan-count-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.plan-count-text {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* 加载和空状态样式 */
+.loading-container,
+.empty-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.loading-text {
+  font-size: 16px;
+  color: #666;
+  margin-top: 16px;
+}
+
+.empty-container p {
+  margin: 0;
+  font-size: 16px;
+}
+
+/* 广告组详情样式 */
+.group-detail {
+  padding: 16px 0;
+}
+
+.empty-plans {
+  text-align: center;
+  padding: 40px 20px;
+  background-color: #fafafa;
+  border-radius: 8px;
+  border: 1px dashed #d9d9d9;
+}
+
+.empty-plans p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* 广告计划卡片样式 */
+.ant-card-meta-title {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.ant-card-meta-description {
+  font-size: 12px;
+  color: #666;
+}
+
+.ant-card-small .ant-card-body {
+  padding: 12px;
+}
+
+.ant-card-small:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  transition: all 0.3s ease;
+}
+
+/* 表格样式优化 */
+.ant-table-thead > tr > th {
+  background-color: #fafafa;
+  font-weight: 600;
+  color: #262626;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background-color: #f5f5f5;
+}
+
+/* 徽章样式 */
+.ant-badge {
+  display: inline-flex;
+  align-items: center;
+}
+
+.ant-badge-count {
+  font-size: 12px;
+  min-width: 20px;
+  height: 20px;
+  line-height: 18px;
+}
+
+/* 状态标签样式 */
+.ant-tag {
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 12px;
+}
+
+/* 表单样式优化 */
+.ant-form-item-label > label {
+  font-weight: 500;
+  color: #262626;
+}
+
+.ant-input {
+  border-radius: 6px;
+}
+
+.ant-input:hover {
+  border-color: #40a9ff;
+}
+
+.ant-input:focus,
+.ant-input-focused {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+/* 按钮样式 */
+.ant-btn {
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.ant-btn-primary {
+  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  border: none;
+  box-shadow: 0 2px 4px rgba(24, 144, 255, 0.3);
+}
+
+.ant-btn-primary:hover {
+  background: linear-gradient(135deg, #40a9ff 0%, #1890ff 100%);
+  box-shadow: 0 4px 8px rgba(24, 144, 255, 0.4);
+}
+
+/* 操作按钮样式 */
+.ant-btn-link {
+  padding: 0;
+  height: auto;
+  line-height: 1.5;
+}
+
+.ant-btn-link:hover {
+  background: none;
+}
+
+.ant-btn-link:disabled {
+  color: #d9d9d9;
+  cursor: not-allowed;
+}
+
+/* 图标样式 */
+.anticon {
+  vertical-align: middle;
+}
+
+/* 列表样式 */
+.ant-list-item {
+  padding: 8px 0;
+}
+
+.ant-list-item:last-child {
+  border-bottom: none;
+}
+
+/* 描述列表样式 */
+.ant-descriptions-item-label {
+  font-weight: 600;
+  color: #595959;
+}
+
+.ant-descriptions-item-content {
+  color: #262626;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .ad-group-management {
+    padding: 16px;
+  }
+  
+  .ad-group-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .ad-group-header h2 {
+    font-size: 20px;
+  }
+  
+  .ant-card-meta-title {
+    font-size: 13px;
+  }
+  
+  .ant-card-meta-description {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 576px) {
+  .ad-group-header h2 {
+    font-size: 18px;
+  }
+  
+  .empty-plans {
+    padding: 30px 15px;
+  }
+  
+  .empty-plans .anticon {
+    font-size: 36px;
+  }
+}
+
+/* 动画效果 */
+.ad-group-management {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 加载状态样式 */
+.ant-spin-container {
+  min-height: 400px;
+}
+
+/* 空状态样式 */
+.ant-empty {
+  margin: 40px 0;
+}
+
+/* 弹窗样式优化 */
+.ant-modal-header {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 16px 24px;
+}
+
+.ant-modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #262626;
+}
+
+.ant-modal-body {
+  padding: 24px;
+}
+
+.ant-modal-footer {
+  border-top: 1px solid #f0f0f0;
+  padding: 12px 24px;
+}
+
+/* 表格滚动条样式 */
+.ant-table-body::-webkit-scrollbar {
+  height: 8px;
+}
+
+.ant-table-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.ant-table-body::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.ant-table-body::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* 分隔符样式 */
+.ant-space-item:not(:last-child)::after {
+  content: '';
+  width: 1px;
+  height: 12px;
+  background-color: #d9d9d9;
+  margin: 0 8px;
+}
+
+/* 计划数量徽章特殊样式 */
+.plan-count-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.plan-count-badge .ant-badge-count {
+  position: static;
+  transform: none;
+  box-shadow: none;
+  border: 1px solid #d9d9d9;
+}
+
+/* 删除按钮禁用状态 */
+.ant-btn-dangerous:disabled {
+  color: #d9d9d9;
+  background-color: #f5f5f5;
+  border-color: #d9d9d9;
+}
+
+.ant-btn-dangerous:disabled:hover {
+  color: #d9d9d9;
+  background-color: #f5f5f5;
+  border-color: #d9d9d9;
+}
+
+/* 确认弹窗样式 */
+.ant-popconfirm-message {
+  font-size: 14px;
+  color: #262626;
+}
+
+.ant-popconfirm-buttons {
+  margin-top: 12px;
+}
+
+/* 详情页面标题样式 */
+.group-detail h4 {
+  color: #262626;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 8px;
+}
+
+/* 计划卡片悬停效果 */
+.ant-card:hover .ant-card-meta-title {
+  color: #1890ff;
+}
+
+/* 图标颜色统一 */
+.anticon-folder {
+  color: #1890ff;
+}
+
+.anticon-file-text {
+  color: #1890ff;
+}

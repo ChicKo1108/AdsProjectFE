@@ -4,6 +4,10 @@
   min-height: 100vh;
 }
 
+.ad-group-list .ant-spin-container {
+  min-height:  auto;
+}
+
 .ad-group-list-container {
   background-color: #fff;
   padding: 20px;

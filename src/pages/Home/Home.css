@@ -61,6 +61,10 @@
   margin-bottom: 20px;
 }
 
+.home-section .ant-spin-container {
+  min-height:  auto;
+}
+
 .home-section:last-child {
   margin-bottom: 0;
 }

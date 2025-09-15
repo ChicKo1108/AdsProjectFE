@@ -32,12 +32,15 @@ function Login() {
   const handleSubmit = async (values) => {
     setIsSubmitting(true);
 
-    await login({
-      username: values.username,
-      password: values.password,
-    });
-    setIsSubmitting(false);
-
+    try {
+      await login({
+        username: values.username,
+        password: values.password,
+      });
+    } catch (error) {
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleFormChange = () => {

@@ -35,6 +35,18 @@ export const getUserInfo = async () => {
   };
 };
 
+export const updateName = async (name) => {
+  logger.info('Update name API call');
+
+  return await request.post('/auth/update-name', { name });
+}
+
+export const updatePassword = async (oldPassword, newPassword, confirmPassword) => {
+  logger.info('Update password API call');
+
+  return await request.post('/auth/update-password', { oldPassword, newPassword, confirmPassword });
+}
+
 
 // 验证token
 export const validateToken = async (token) => {

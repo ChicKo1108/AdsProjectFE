@@ -404,9 +404,6 @@ function UserManagement() {
         rowKey="id"
         pagination={{
           pageSize: 10,
-          showSizeChanger: true,
-          showQuickJumper: true,
-          showTotal: total => `共 ${total} 条记录`,
         }}
         loading={loading}
       />

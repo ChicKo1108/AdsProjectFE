@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { App as AntdApp } from 'antd';
-import { UserProvider } from './contexts/UserContext';
+import { App as AntdApp, Spin } from 'antd';
+import { UserProvider, useUser } from './contexts/UserContext';
 import Navigation from './components/Navigation';
 import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
@@ -16,8 +16,38 @@ import './App.css';
 // 应用布局组件
 function AppLayout() {
   const location = useLocation();
+  const { loading, initializeUser } = useUser();
+  const [isInitialized, setIsInitialized] = useState(false);
   const isLoginPage = location.pathname === '/login';
   const isAdminPage = location.pathname.startsWith('/admin');
+  
+  // 初始化用户状态
+  useEffect(() => {
+    const initialize = async () => {
+      await initializeUser();
+      setIsInitialized(true);
+    };
+    initialize();
+  }, []); // 移除initializeUser依赖，只在组件挂载时执行一次
+  
+  // 如果正在初始化，显示加载状态
+  if (!isInitialized || loading) {
+    return (
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+        backgroundColor: '#f5f5f5'
+      }}>
+        <Spin size="large" />
+        <div style={{ marginTop: '16px', color: '#666', fontSize: '16px' }}>
+          加载中...
+        </div>
+      </div>
+    );
+  }
   
   return (
     <div className="App">

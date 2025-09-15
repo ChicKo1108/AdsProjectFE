@@ -77,24 +77,7 @@ function AdPlanList() {
               }}
               size="middle"
               scroll={{ x: 800 }}
-              columns={[
-                ...AD_PLAN_TABLE_COLUMNS,
-                {
-                  title: '操作',
-                  dataIndex: 'operation',
-                  key: 'operation',
-                  width: 70,
-                  align: 'center',
-                  fixed: 'right',
-                  render: () => (
-                    <div>
-                      <Button size="small" type="link">
-                        <Link to="/ad-plan/create">详情</Link>
-                      </Button>
-                    </div>
-                  ),
-                },
-              ]}
+              columns={AD_PLAN_TABLE_COLUMNS}
             />
           </div>
         </div>

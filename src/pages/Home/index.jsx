@@ -49,7 +49,7 @@ function Home() {
         {/* 广告计划列表 */}
         <div className="home-section">
           <h3>
-            <Link to="/adPlan">广告计划 &gt;</Link>
+            <Link to="/ad-plans">广告计划 &gt;</Link>
           </h3>
           <Table
             dataSource={adPlans}
@@ -65,7 +65,7 @@ function Home() {
         {/* 广告创意列表 */}
         <div className="home-section">
           <h3>
-            <Link to="/adCreative">广告创意 &gt;</Link>
+            <Link to="/ad-creatives">广告创意 &gt;</Link>
           </h3>
           <Table
             dataSource={adCreatives}

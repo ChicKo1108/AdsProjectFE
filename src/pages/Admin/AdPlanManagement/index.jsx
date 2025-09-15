@@ -8,9 +8,7 @@ import {
   Select,
   Space,
   Tag,
-  DatePicker,
   InputNumber,
-  Switch,
   Popconfirm,
   Descriptions,
   App,
@@ -20,8 +18,8 @@ import {
   EditOutlined,
   DeleteOutlined,
   EyeOutlined,
+  SearchOutlined,
 } from '@ant-design/icons';
-import dayjs from 'dayjs';
 import { AD_PLAN_TABLE_COLUMNS } from '../../../utils/constants';
 import './AdPlanManagement.css';
 import {
@@ -30,6 +28,7 @@ import {
   updateAdPlan,
   deleteAdPlan,
 } from '../../../apis';
+import dayjs from 'dayjs';
 
 const { Option } = Select;
 
@@ -43,6 +42,9 @@ function AdPlanManagement() {
   const pageSize = 10;
   const [currentPage, setCurrentPage] = useState(1);
   const [total, setTotal] = useState(0);
+
+  // 搜索相关状态
+  const [searchName, setSearchName] = useState('');
 
   // 添加/编辑广告计划弹窗状态
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -58,13 +60,20 @@ function AdPlanManagement() {
     loadAdPlans();
   }, [currentPage]);
 
-  const loadAdPlans = async () => {
+  const loadAdPlans = async (searchKeyword = searchName) => {
     try {
       setLoading(true);
-      const { ad_plans: adPlans, pagination } = await getAdPlanList({
+      const params = {
         page: currentPage,
         pageSize,
-      });
+      };
+
+      // 如果有搜索关键词，添加到请求参数中
+      if (searchKeyword && searchKeyword.trim()) {
+        params.name = searchKeyword.trim();
+      }
+
+      const { ad_plans: adPlans, pagination } = await getAdPlanList(params);
       setTotal(pagination.total);
       setAdPlans(adPlans);
     } catch (error) {
@@ -72,6 +81,22 @@ function AdPlanManagement() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // 搜索处理
+  const handleSearch = value => {
+    const keyword = value || searchName;
+    setSearchName(keyword);
+    setCurrentPage(1); // 搜索时重置到第一页
+    // 立即执行搜索
+    loadAdPlans(keyword);
+  };
+
+  const handleSearchClear = () => {
+    setSearchName('');
+    setCurrentPage(1);
+    // 清空搜索时立即刷新数据
+    loadAdPlans('');
   };
 
   // ==================== 广告计划操作处理 ====================
@@ -250,9 +275,22 @@ function AdPlanManagement() {
   const renderHeader = () => (
     <div className="ad-plan-header">
       <h2>广告计划管理</h2>
-      <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-        新建计划
-      </Button>
+      <div className="header-actions">
+        <Input.Search
+          placeholder="搜索 ID / 计划名称"
+          allowClear
+          enterButton={<SearchOutlined />}
+          size="middle"
+          style={{ width: 300, marginRight: 16 }}
+          value={searchName}
+          onChange={e => setSearchName(e.target.value)}
+          onSearch={handleSearch}
+          onClear={handleSearchClear}
+        />
+        <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
+          新建计划
+        </Button>
+      </div>
     </div>
   );
 
@@ -594,7 +632,7 @@ function AdPlanManagement() {
           编辑
         </Button>,
       ]}
-      width={600}
+      width={800}
     >
       {viewingPlan && (
         <Descriptions
@@ -625,7 +663,7 @@ function AdPlanManagement() {
             </Tag>
           </Descriptions.Item>
           <Descriptions.Item label="智能创意优选">
-            {viewingPlan.chuang_yi_you_xuan}
+            {viewingPlan.chuang_yi_you_xuan ? '开' : '关'}
           </Descriptions.Item>
           <Descriptions.Item label="预算">
             ¥{viewingPlan.budget.toLocaleString()}
@@ -652,10 +690,10 @@ function AdPlanManagement() {
             {viewingPlan.description || '暂无描述'}
           </Descriptions.Item>
           <Descriptions.Item label="创建时间">
-            {viewingPlan.createdAt}
+            {dayjs(viewingPlan.created_at).format('YYYY-MM-DD HH:mm:ss')}
           </Descriptions.Item>
           <Descriptions.Item label="更新时间">
-            {viewingPlan.updatedAt}
+            {dayjs(viewingPlan.updated_at).format('YYYY-MM-DD HH:mm:ss')}
           </Descriptions.Item>
         </Descriptions>
       )}
@@ -670,7 +708,7 @@ function AdPlanManagement() {
         columns={columns}
         dataSource={adPlans}
         rowKey="id"
-        size="small"
+        size="middle"
         loading={loading}
         pagination={{
           onChange: setCurrentPage,
