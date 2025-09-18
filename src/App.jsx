@@ -12,6 +12,7 @@ import AdGroupList from './pages/AdGroupList';
 import AdCreativeList from './pages/AdCreativeList';
 import NotFound from './pages/404';
 import './App.css';
+import { ENV_VARS } from './utils/env';
 
 // 应用布局组件
 function AppLayout() {
@@ -28,6 +29,8 @@ function AppLayout() {
       setIsInitialized(true);
     };
     initialize();
+    console.log(ENV_VARS.APP_ENV);
+    
   }, []); // 移除initializeUser依赖，只在组件挂载时执行一次
   
   // 如果正在初始化，显示加载状态
