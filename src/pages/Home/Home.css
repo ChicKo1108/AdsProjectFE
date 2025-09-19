@@ -32,16 +32,55 @@
   margin-bottom: 20px;
 }
 
+.home-account-header {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.account-name {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #1890ff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.account-id {
+  font-size: 16px;
+  font-weight: 400;
+  color: #666;
+  background-color: #f5f5f5;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
 .home-promotion-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.home-promotion-info span {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  padding: 8px 12px;
+  background-color: #fafafa;
+  border-radius: 6px;
+  border-left: 4px solid #1890ff;
 }
 
 .home-promotion-info .icon {
   position: relative;
   top: 3px;
-  margin-right: 2px;
+  margin-right: 8px;
 }
 
 .home-promotion-button {

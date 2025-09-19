@@ -35,6 +35,12 @@ export const getUserInfo = async () => {
   };
 };
 
+// 获取用户可访问的账户列表API
+export const getUserAccounts = async () => {
+  logger.info('Get user accounts API call');
+  return await request.get('/users/accounts');
+};
+
 export const updateName = async (name) => {
   logger.info('Update name API call');
 

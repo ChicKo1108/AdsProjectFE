@@ -28,12 +28,17 @@ import {
   updateAdPlan,
   deleteAdPlan,
 } from '../../../apis';
+import { useUser } from '../../../contexts/UserContext';
 import dayjs from 'dayjs';
 
 const { Option } = Select;
 
 function AdPlanManagement() {
   const { message } = App.useApp();
+  const { currentAccount } = useUser();
+
+  // 检查当前用户是否只能查看统计数据（ad_operator角色）
+  const isStatsReadOnly = currentAccount?.user_role === 'ad_operator';
 
   // ==================== 状态管理 ====================
   // 广告计划列表相关状态
@@ -58,7 +63,7 @@ function AdPlanManagement() {
   // ==================== 数据加载 ====================
   useEffect(() => {
     loadAdPlans();
-  }, [currentPage]);
+  }, [currentPage, currentAccount]);
 
   const loadAdPlans = async (searchKeyword = searchName) => {
     try {
@@ -73,7 +78,7 @@ function AdPlanManagement() {
         params.name = searchKeyword.trim();
       }
 
-      const { ad_plans: adPlans, pagination } = await getAdPlanList(params);
+      const { ad_plans: adPlans, pagination } = await getAdPlanList(params, currentAccount?.id);
       setTotal(pagination.total);
       setAdPlans(adPlans);
     } catch (error) {
@@ -439,6 +444,7 @@ function AdPlanManagement() {
               placeholder="请输入花费"
               min={0}
               precision={2}
+              disabled={isStatsReadOnly}
               formatter={value =>
                 `¥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
               }
@@ -457,6 +463,7 @@ function AdPlanManagement() {
               placeholder="请输入曝光量"
               min={0}
               precision={0}
+              disabled={isStatsReadOnly}
               formatter={value =>
                 `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
               }
@@ -477,6 +484,7 @@ function AdPlanManagement() {
               placeholder="请输入点击量"
               min={0}
               precision={0}
+              disabled={isStatsReadOnly}
               formatter={value =>
                 `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
               }
@@ -495,6 +503,7 @@ function AdPlanManagement() {
               placeholder="请输入下载量"
               min={0}
               precision={0}
+              disabled={isStatsReadOnly}
               formatter={value =>
                 `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
               }
@@ -515,6 +524,7 @@ function AdPlanManagement() {
               placeholder="请输入点击均价"
               min={0}
               precision={2}
+              disabled={isStatsReadOnly}
               formatter={value =>
                 `¥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
               }
@@ -541,6 +551,7 @@ function AdPlanManagement() {
               min={0}
               max={100}
               precision={2}
+              disabled={isStatsReadOnly}
               formatter={value => `${value}%`}
               parser={value => value.replace('%', '')}
             />
@@ -559,6 +570,7 @@ function AdPlanManagement() {
               placeholder="请输入ECPM"
               min={0}
               precision={2}
+              disabled={isStatsReadOnly}
               formatter={value =>
                 `¥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
               }
@@ -577,6 +589,7 @@ function AdPlanManagement() {
               placeholder="请输入下载均价"
               min={0}
               precision={2}
+              disabled={isStatsReadOnly}
               formatter={value =>
                 `¥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
               }
@@ -604,6 +617,7 @@ function AdPlanManagement() {
             min={0}
             max={100}
             precision={2}
+            disabled={isStatsReadOnly}
             formatter={value => `${value}%`}
             parser={value => value.replace('%', '')}
           />

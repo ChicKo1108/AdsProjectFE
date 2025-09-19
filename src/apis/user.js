@@ -1,17 +1,35 @@
 import request from '../utils/request';
 import { logger } from '../config';
 
-export const getUserList = async (params) => {
+export const getUserList = async (params, accountId) => {
   logger.info('Get user list API call');
-  return await request.get('/admin/users', { params });
+  
+  const requestParams = { ...params };
+  if (accountId) {
+    requestParams.accountId = accountId;
+  }
+  
+  return await request.get('/admin/users', { params: requestParams });
 };
 
-export const updateUser = async (id, data) => {
+export const updateUser = async (id, data, accountId) => {
   logger.info('Update user API call');
-  return await request.put(`/admin/users/${id}`, data);
+  
+  const requestData = { ...data };
+  if (accountId) {
+    requestData.accountId = accountId;
+  }
+  
+  return await request.put(`/admin/users/${id}`, requestData);
 };
 
-export const createUser = async (data) => {
+export const createUser = async (data, accountId) => {
   logger.info('Create user API call');
-  return await request.post('/admin/users', data);
+  
+  const requestData = { ...data };
+  if (accountId) {
+    requestData.accountId = accountId;
+  }
+  
+  return await request.post('/admin/users', requestData);
 };

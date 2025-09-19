@@ -35,9 +35,11 @@ import {
   updateAdGroup,
 } from '../../../apis';
 import dayjs from 'dayjs';
+import { useUser } from '../../../contexts/UserContext';
 
 function AdGroupManagement() {
   const { message } = App.useApp();
+  const { currentAccount } = useUser();
 
   // ==================== 状态管理 ====================
   // 广告组列表相关状态
@@ -65,13 +67,12 @@ function AdGroupManagement() {
   // ==================== 数据加载 ====================
   useEffect(() => {
     loadAdGroups();
-  }, []);
+  }, [currentAccount]);
 
-  const loadAdGroups = async (page = 1, pageSize = 10) => {
+  const loadAdGroups = async () => {
     try {
       setLoading(true);
-      const { ad_groups: adGroups } = await getAdGroups();
-
+      const { ad_groups: adGroups } = await getAdGroups(currentAccount?.id);
       setAdGroups(adGroups);
     } catch (error) {
       message.error('加载广告组列表失败');
@@ -107,8 +108,7 @@ function AdGroupManagement() {
 
     try {
       setLoading(true);
-      // 模拟API调用
-      await deleteAdGroup(record.id);
+      await deleteAdGroup(record.id, currentAccount?.id);
 
       setAdGroups(adGroups.filter(group => group.id !== record.id));
       message.success('广告组删除成功');
@@ -137,7 +137,8 @@ function AdGroupManagement() {
       if (editingGroup) {
         await updateAdGroup(
           editingGroup.id,
-          values.name
+          values.name,
+          currentAccount?.id
         );
         
         // 编辑广告组
@@ -149,7 +150,7 @@ function AdGroupManagement() {
         message.success('广告组更新成功');
       } else {
         // 添加广告组
-        const { ad_group: newGroup } = await createAdGroup(values.name);
+        const { ad_group: newGroup } = await createAdGroup(values.name, currentAccount?.id);
 
         setAdGroups([newGroup, ...adGroups]);
         message.success('广告组创建成功');
@@ -190,7 +191,7 @@ function AdGroupManagement() {
     const { ad_plans: adPlans } = await getAdPlanList({
       page: 1,
       pageSize: 999999,
-    });
+    }, currentAccount?.id);
 
     setAvailablePlans(adPlans);
     setIsAddPlanModalVisible(true);
@@ -202,7 +203,7 @@ function AdGroupManagement() {
       return;
     }
 
-    await bindAdGroupToPlan(viewingGroup.id, selectedPlanIds);
+    await bindAdGroupToPlan(viewingGroup.id, selectedPlanIds, currentAccount?.id);
 
     const selectedPlans = availablePlans.filter(plan =>
       selectedPlanIds.includes(plan.id)
@@ -253,7 +254,7 @@ function AdGroupManagement() {
 
   // 移除广告计划
   const handleRemovePlan = async planId => {
-    await unbindAdGroupFromPlan(viewingGroup.id, planId);
+    await unbindAdGroupFromPlan(viewingGroup.id, planId, currentAccount?.id);
     const updatedPlans = viewingGroup.ad_plans.filter(
       plan => plan.id !== planId
     );

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Menu, Breadcrumb, Button } from 'antd';
-import { UserOutlined, DashboardOutlined, AuditOutlined, ForkOutlined, FireOutlined, HomeOutlined } from '@ant-design/icons';
+import { Layout, Menu, Breadcrumb, Button, Select, Space } from 'antd';
+import { UserOutlined, DashboardOutlined, AuditOutlined, ForkOutlined, FireOutlined, HomeOutlined, SwapOutlined } from '@ant-design/icons';
 import { useNavigate, Routes, Route, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { useUser } from '../../contexts/UserContext';
 import UserManagement from './UserManagement';
 import Dashboard from './Dashboard';
 import AdPlanManagement from './AdPlanManagement';
@@ -11,11 +12,13 @@ import AdGroupManagement from './AdGroupManagement';
 import './Admin.css';
 
 const { Sider, Content } = Layout;
+const { Option } = Select;
 
 function Admin() {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAdmin, userInfo } = useAuth();
+  const { accounts, currentAccount, switchAccount, accountsLoading } = useUser();
   
   // 根据当前路径确定选中的菜单项
   const getSelectedKey = () => {
@@ -30,12 +33,6 @@ function Admin() {
   
   const selectedKey = getSelectedKey();
 
-  // 权限检查
-  useEffect(() => {
-    if (!isAdmin()) {
-      navigate('/404', { replace: true });
-    }
-  }, [isAdmin, navigate]);
 
   // 根据用户权限过滤菜单项
   const getMenuItems = () => {
@@ -189,10 +186,38 @@ function Admin() {
 
       <Layout>
         <Content className="admin-content">
-          <Breadcrumb
-            className="admin-breadcrumb"
-            items={getBreadcrumbItems()}
-          />
+          <div className="admin-header">
+            <Breadcrumb
+              className="admin-breadcrumb"
+              items={getBreadcrumbItems()}
+            />
+            
+            {/* 账户切换组件 */}
+            <div className="admin-account-switcher">
+              <div>
+                {/* <SwapOutlined />
+                <span style={{ margin: '0 8px' }}>当前账户:</span> */}
+                <Select
+                  value={currentAccount?.id}
+                  onChange={switchAccount}
+                  loading={accountsLoading}
+                  style={{ minWidth: 200 }}
+                  placeholder="选择账户"
+                >
+                  {accounts.map(account => (
+                    <Option key={account.id} value={account.id}>
+                      <>
+                        <span>{account.name}</span>
+                        <span style={{marginLeft:8, color: '#666', fontSize: '12px' }}>
+                          ({account.display_id})
+                        </span>
+                      </>
+                    </Option>
+                  ))}
+                </Select>
+              </div>
+            </div>
+          </div>
 
           <div className="admin-main-content">
             <Routes>

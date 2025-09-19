@@ -12,11 +12,13 @@ import {
 } from 'antd';
 import { PlusOutlined, SettingOutlined, KeyOutlined } from '@ant-design/icons';
 import { getUserList, updateUser, createUser } from '../../../apis';
+import { useUser } from '../../../contexts/UserContext';
 
 const { Option } = Select;
 
 function UserManagement() {
   const { message } = App.useApp();
+  const { currentAccount } = useUser();
 
   // ==================== 状态管理 ====================
   // 用户列表相关状态
@@ -43,11 +45,12 @@ function UserManagement() {
   // ==================== 数据加载 ====================
   useEffect(() => {
     loadUsers();
-  }, []);
+  }, [currentAccount]);
 
   const loadUsers = async () => {
     try {
-      const users = await getUserList();
+      setLoading(true);
+      const { users } = await getUserList(currentAccount?.id);
       setUsers(users);
     } catch (error) {
       message.error('加载用户列表失败');
@@ -147,28 +150,33 @@ function UserManagement() {
   const handleModalOk = async () => {
     try {
       const values = await form.validateFields();
+      setLoading(true);
+
       if (editingUser) {
         // 编辑用户
-        await updateUser(editingUser.id, values);
+        await updateUser(editingUser.id, values, currentAccount?.id);
         setUsers(
           users.map(user =>
             user.id === editingUser.id ? { ...user, ...values } : user
           )
         );
-        message.success('用户信息更新成功');
+        message.success('用户更新成功');
       } else {
         // 添加用户
-        const { user } = await createUser(values);
-        setUsers([...users, user]);
-        message.success('用户添加成功');
+        const { user: newUser } = await createUser(values, currentAccount?.id);
+        setUsers([newUser, ...users]);
+        message.success('用户创建成功');
       }
+
       handleModalCancel();
     } catch (error) {
       if (error.errorFields) {
         console.log('表单验证失败:', error);
       } else {
-        message.error(editingUser ? '用户信息更新失败' : '用户添加失败');
+        message.error(editingUser ? '用户更新失败' : '用户创建失败');
       }
+    } finally {
+      setLoading(false);
     }
   };
 

@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Dropdown, Button, Modal, Input, message } from 'antd';
+import { Dropdown, Button, Modal, Input, message, Select } from 'antd';
 import {
   UserOutlined,
   SettingOutlined,
   LogoutOutlined,
   DownOutlined,
   KeyOutlined,
+  BankOutlined,
 } from '@ant-design/icons';
 import { useAuth } from '../../hooks/useAuth';
+import { useUser } from '../../contexts/UserContext';
 import './Navigation.css';
 import { updateName, updatePassword } from '../../apis';
 import useApp from 'antd/es/app/useApp';
@@ -16,15 +18,16 @@ import useApp from 'antd/es/app/useApp';
 function Navigation({ pageKey }) {
   const {
     isLoggedIn,
-    userInfo,
     loading,
-    error,
     logout,
     getDisplayName,
-    clearError,
     updateUserInfo,
     isAdmin,
   } = useAuth();
+
+  // 使用UserContext获取账户相关信息
+  const { accounts, currentAccount, accountsLoading, switchAccount } =
+    useUser();
 
   const { message } = useApp();
 
@@ -131,21 +134,39 @@ function Navigation({ pageKey }) {
     navigate('/admin/dashboard');
   };
 
+  // 处理账户切换
+  const handleAccountChange = accountId => {
+    switchAccount(accountId);
+    message.success('账户切换成功');
+  };
+
+  // 账户选择下拉菜单项
+  const accountMenuItems =
+    accounts?.map(account => ({
+      key: account.id,
+      label: (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <BankOutlined />
+          <span>{account.name}</span>
+          {currentAccount?.id === account.id && (
+            <span style={{ color: '#1890ff', fontSize: '12px' }}>(当前)</span>
+          )}
+        </div>
+      ),
+      onClick: () => handleAccountChange(account.id),
+    })) || [];
+
   // 下拉菜单项
   const menuItems = [
-    ...(isAdmin()
-      ? [
-          {
-            key: 'admin',
-            icon: <SettingOutlined />,
-            label: '管理后台',
-            onClick: handleAdminPanel,
-          },
-          {
-            type: 'divider',
-          },
-        ]
-      : []),
+    {
+      key: 'admin',
+      icon: <SettingOutlined />,
+      label: '管理后台',
+      onClick: handleAdminPanel,
+    },
+    {
+      type: 'divider',
+    },
     {
       key: 'profile',
       icon: <UserOutlined />,
@@ -209,6 +230,23 @@ function Navigation({ pageKey }) {
         <div className="navigation-user">
           {isLoggedIn ? (
             <>
+              {/* 账户切换下拉菜单 */}
+              {accounts && accounts.length > 0 && (
+                <Dropdown
+                  menu={{ items: accountMenuItems }}
+                  trigger={['hover']}
+                  placement="bottomRight"
+                  loading={accountsLoading}
+                >
+                  <div style={{ marginRight: '16px', cursor: 'pointer' }}>
+                    <BankOutlined style={{ marginRight: 5 }} />
+                    {currentAccount?.name || '选择账户'}
+                    <DownOutlined style={{ fontSize: '12px', marginLeft: 5 }} />
+                  </div>
+                </Dropdown>
+              )}
+
+              {/* 用户信息下拉菜单 */}
               <Dropdown
                 menu={{ items: menuItems }}
                 trigger={['hover']}

@@ -22,9 +22,11 @@ import {
 } from '@ant-design/icons';
 import './Dashboard.css';
 import { getAccountInfo, updateAccountInfo } from '../../../apis';
+import { useUser } from '../../../contexts/UserContext';
 
 function Dashboard() {
   const { message } = App.useApp();
+  const { currentAccount } = useUser();
   
   // ==================== 状态管理 ====================
   const [accountData, setAccountData] = useState({
@@ -39,13 +41,13 @@ function Dashboard() {
   // ==================== 数据加载 ====================
   useEffect(() => {
     loadAccountData();
-  }, []);
+  }, [currentAccount?.id]);
   
   const loadAccountData = async () => {
     try {
       setLoading(true);
       
-      const data = await getAccountInfo();
+      const data = await getAccountInfo(currentAccount?.id);
       setAccountData(data);
 
     } catch (error) {
@@ -66,7 +68,7 @@ function Dashboard() {
       const values = await form.validateFields();
       setLoading(true);
       
-      await updateAccountInfo(values);
+      await updateAccountInfo(values, currentAccount?.id);
       
       
       setAccountData(values);

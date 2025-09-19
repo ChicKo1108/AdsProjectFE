@@ -26,11 +26,17 @@ import {
   getAdCreativeList,
   updateAdCreative,
 } from '../../../apis';
+import { useUser } from '../../../contexts/UserContext';
+import dayjs from 'dayjs';
 
 const { Option } = Select;
 
 function AdCreativeManagement() {
   const { message } = App.useApp();
+  const { currentAccount } = useUser();
+
+  // 检查当前用户是否只能查看统计数据（ad_operator角色）
+  const isStatsReadOnly = currentAccount?.user_role === 'ad_operator';
 
   // ==================== 状态管理 ====================
   // 广告创意列表相关状态
@@ -57,31 +63,29 @@ function AdCreativeManagement() {
   // ==================== 数据加载 ====================
   useEffect(() => {
     loadAdCreatives();
-  }, []);
+  }, [pagination.current, currentAccount]);
 
-  const loadAdCreatives = async (page = 1, pageSize = 10, searchKeyword = searchName) => {
+  const loadAdCreatives = async (searchKeyword = searchName) => {
     try {
       setLoading(true);
       const params = {
-        page,
-        pageSize,
+        page: pagination.current,
+        pageSize: pagination.pageSize,
       };
-      
-      // 如果有搜索关键词，添加到请求参数中
+
       if (searchKeyword && searchKeyword.trim()) {
         params.name = searchKeyword.trim();
       }
-      
-      const { ad_creatives: adCreatives, pagination: paginationInfo } =
-        await getAdCreativeList(params);
-      setAdCreatives(adCreatives);
+
+      const { ad_creatives: adCreatives, pagination: paginationData } = await getAdCreativeList(params, currentAccount?.id);
       setPagination({
-        total: paginationInfo.total,
-        current: paginationInfo.current,
-        pageSize: paginationInfo.pageSize,
+        ...paginationData,
+        current: paginationData.current,
+        pageSize: paginationData.pageSize,
       });
+      setAdCreatives(adCreatives);
     } catch (error) {
-      message.error('加载广告创意列表失败');
+      message.error('加载广告创意列表失败' + error);
     } finally {
       setLoading(false);
     }
@@ -144,15 +148,21 @@ function AdCreativeManagement() {
 
   const handleModalOk = async () => {
     try {
-      const data = await form.validateFields();
+      const values = await form.validateFields();
       setLoading(true);
+
+      const data = {
+        ...values,
+        image_url: values.image_url || '',
+        video_url: values.video_url || '',
+      };
+
       if (editingCreative) {
         const { ad_creative: newData } = await updateAdCreative(
           editingCreative.id,
-          data
+          data,
+          currentAccount?.id
         );
-
-        // 编辑广告创意
         setAdCreatives(
           adCreatives.map(creative =>
             creative.id === editingCreative.id ? newData : creative
@@ -160,8 +170,7 @@ function AdCreativeManagement() {
         );
         message.success('广告创意更新成功');
       } else {
-        // 添加广告创意
-        const { ad_creative: res } = await createAdCreative(data);
+        const { ad_creative: res } = await createAdCreative(data, currentAccount?.id);
         setAdCreatives([res, ...adCreatives]);
         message.success('广告创意创建成功');
       }
@@ -171,9 +180,7 @@ function AdCreativeManagement() {
       if (error.errorFields) {
         console.log('表单验证失败:', error);
       } else {
-        message.error(
-          editingCreative ? '广告创意更新失败' : '广告创意创建失败'
-        );
+        message.error(editingCreative ? '广告创意更新失败' : '广告创意创建失败');
       }
     } finally {
       setLoading(false);
@@ -411,9 +418,10 @@ function AdCreativeManagement() {
           <Form.Item name="ecpm" label="ECPM" style={{ flex: 1 }}>
             <InputNumber
               style={{ width: '100%' }}
-              placeholder="请输入ECPM"
+              placeholder="请输入花费"
               min={0}
               precision={2}
+              disabled={isStatsReadOnly}
               formatter={value =>
                 `¥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
               }
@@ -434,6 +442,7 @@ function AdCreativeManagement() {
               placeholder="请输入曝光量"
               min={0}
               precision={0}
+              disabled={isStatsReadOnly}
               formatter={value =>
                 `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
               }
@@ -452,6 +461,7 @@ function AdCreativeManagement() {
               placeholder="请输入点击量"
               min={0}
               precision={0}
+              disabled={isStatsReadOnly}
               formatter={value =>
                 `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
               }
@@ -472,6 +482,7 @@ function AdCreativeManagement() {
               placeholder="请输入下载量"
               min={0}
               precision={0}
+              disabled={isStatsReadOnly}
               formatter={value =>
                 `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
               }
@@ -498,6 +509,7 @@ function AdCreativeManagement() {
               min={0}
               max={100}
               precision={2}
+              disabled={isStatsReadOnly}
               formatter={value => `${value}%`}
               parser={value => value.replace('%', '')}
             />
@@ -523,6 +535,7 @@ function AdCreativeManagement() {
             min={0}
             max={100}
             precision={2}
+            disabled={isStatsReadOnly}
             formatter={value => `${value}%`}
             parser={value => value.replace('%', '')}
           />
@@ -551,7 +564,7 @@ function AdCreativeManagement() {
           编辑
         </Button>,
       ]}
-      width={600}
+      width={800}
     >
       {viewingCreative && (
         <Descriptions
@@ -610,14 +623,11 @@ function AdCreativeManagement() {
           <Descriptions.Item label="下载率">
             {viewingCreative.download_rate}%
           </Descriptions.Item>
-          <Descriptions.Item label="创意描述" span={2}>
-            {viewingCreative.description || '暂无描述'}
-          </Descriptions.Item>
           <Descriptions.Item label="创建时间">
-            {viewingCreative.createdAt}
+            {dayjs(viewingCreative.created_at).format('YYYY-MM-DD HH:mm:ss')}
           </Descriptions.Item>
           <Descriptions.Item label="更新时间">
-            {viewingCreative.updatedAt}
+            {dayjs(viewingCreative.updated_at).format('YYYY-MM-DD HH:mm:ss')}
           </Descriptions.Item>
         </Descriptions>
       )}
