@@ -238,8 +238,7 @@ function Navigation({ pageKey }) {
                   placement="bottomRight"
                   loading={accountsLoading}
                 >
-                  <div style={{ marginRight: '16px', cursor: 'pointer' }}>
-                    <BankOutlined style={{ marginRight: 5 }} />
+                  <div style={{ marginRight: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
                     {currentAccount?.name || '选择账户'}
                     <DownOutlined style={{ fontSize: '12px', marginLeft: 5 }} />
                   </div>
