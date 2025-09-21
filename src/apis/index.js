@@ -34,7 +34,14 @@ export {
 } from './user';
 
 // 账户相关API
-export { getAccountInfo, updateAccountInfo, getAccountList } from './account';
+export { 
+  getAccountInfo, 
+  updateAccountInfo, 
+  getAccountList,
+  createAccount,
+  deleteAccount,
+  getAccountUsers
+} from './account';
 
 // 广告组相关API
 export {

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, Menu, Breadcrumb, Button, Select, Space } from 'antd';
-import { UserOutlined, DashboardOutlined, AuditOutlined, ForkOutlined, FireOutlined, HomeOutlined, SwapOutlined } from '@ant-design/icons';
+import { UserOutlined, DashboardOutlined, AuditOutlined, ForkOutlined, FireOutlined, HomeOutlined, SwapOutlined, TeamOutlined } from '@ant-design/icons';
 import { useNavigate, Routes, Route, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useUser } from '../../contexts/UserContext';
 import UserManagement from './UserManagement';
+import AccountManagement from './AccountManagement';
 import Dashboard from './Dashboard';
 import AdPlanManagement from './AdPlanManagement';
 import AdCreativeManagement from './AdCreativeManagement';
@@ -24,6 +25,7 @@ function Admin() {
   const getSelectedKey = () => {
     const path = location.pathname;
     if (path.includes('/admin/users')) return 'users';
+    if (path.includes('/admin/accounts')) return 'accounts';
     if (path.includes('/admin/dashboard')) return 'dashboard';
     if (path.includes('/admin/ad-plans')) return 'adPlans';
     if (path.includes('/admin/ad-groups')) return 'adGroup';
@@ -59,8 +61,13 @@ function Admin() {
       }
     ];
     
-    // 只有超级管理员可以看到用户管理
+    // 只有超级管理员可以看到用户管理和账户管理
     if (userInfo?.role === 'super-admin') {
+      baseItems.unshift({
+        key: 'accounts',
+        icon: <TeamOutlined />,
+        label: '账户管理'
+      });
       baseItems.unshift({
         key: 'users',
         icon: <UserOutlined />,
@@ -77,6 +84,9 @@ function Admin() {
     switch (key) {
       case 'users':
         navigate('/admin/users');
+        break;
+      case 'accounts':
+        navigate('/admin/accounts');
         break;
       case 'dashboard':
         navigate('/admin/dashboard');
@@ -130,6 +140,9 @@ function Admin() {
     switch (selectedKey) {
       case 'users':
         items.push({ title: '用户管理' });
+        break;
+      case 'accounts':
+        items.push({ title: '账户管理' });
         break;
       case 'dashboard':
         items.push({ title: '账户数据' });
@@ -224,6 +237,11 @@ function Admin() {
               <Route path="users" element={
                 <SuperAdminRoute>
                   <UserManagement />
+                </SuperAdminRoute>
+              } />
+              <Route path="accounts" element={
+                <SuperAdminRoute>
+                  <AccountManagement />
                 </SuperAdminRoute>
               } />
               <Route path="dashboard" element={<Dashboard />} />
