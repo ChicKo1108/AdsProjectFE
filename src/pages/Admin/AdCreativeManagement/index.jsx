@@ -23,6 +23,7 @@ import { AD_CREATIVES_TABLE_COLUMNS } from '../../../utils/constants';
 import './AdCreativeManagement.css';
 import {
   createAdCreative,
+  deleteAdCreative,
   getAdCreativeList,
   updateAdCreative,
 } from '../../../apis';
@@ -56,7 +57,7 @@ function AdCreativeManagement() {
   // 查看详情弹窗状态
   const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
   const [viewingCreative, setViewingCreative] = useState(null);
-  
+
   // 搜索相关状态
   const [searchName, setSearchName] = useState('');
 
@@ -77,7 +78,8 @@ function AdCreativeManagement() {
         params.name = searchKeyword.trim();
       }
 
-      const { ad_creatives: adCreatives, pagination: paginationData } = await getAdCreativeList(params, currentAccount?.id);
+      const { ad_creatives: adCreatives, pagination: paginationData } =
+        await getAdCreativeList(params, currentAccount?.id);
       setPagination({
         ...paginationData,
         current: paginationData.current,
@@ -90,16 +92,16 @@ function AdCreativeManagement() {
       setLoading(false);
     }
   };
-  
+
   // 搜索处理
-  const handleSearch = (value) => {
+  const handleSearch = value => {
     const keyword = value || searchName;
     setSearchName(keyword);
     setPagination(prev => ({ ...prev, current: 1 })); // 搜索时重置到第一页
     // 立即执行搜索
     loadAdCreatives(1, pagination.pageSize, keyword);
   };
-  
+
   const handleSearchClear = () => {
     setSearchName('');
     setPagination(prev => ({ ...prev, current: 1 }));
@@ -129,8 +131,7 @@ function AdCreativeManagement() {
   const handleDelete = async id => {
     try {
       setLoading(true);
-      // 模拟API调用
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await deleteAdCreative(id, currentAccount?.id);
 
       setAdCreatives(adCreatives.filter(creative => creative.id !== id));
       message.success('广告创意删除成功');
@@ -151,16 +152,10 @@ function AdCreativeManagement() {
       const values = await form.validateFields();
       setLoading(true);
 
-      const data = {
-        ...values,
-        image_url: values.image_url || '',
-        video_url: values.video_url || '',
-      };
-
       if (editingCreative) {
         const { ad_creative: newData } = await updateAdCreative(
           editingCreative.id,
-          data,
+          values,
           currentAccount?.id
         );
         setAdCreatives(
@@ -170,7 +165,10 @@ function AdCreativeManagement() {
         );
         message.success('广告创意更新成功');
       } else {
-        const { ad_creative: res } = await createAdCreative(data, currentAccount?.id);
+        const { ad_creative: res } = await createAdCreative(
+          values,
+          currentAccount?.id
+        );
         setAdCreatives([res, ...adCreatives]);
         message.success('广告创意创建成功');
       }
@@ -180,7 +178,9 @@ function AdCreativeManagement() {
       if (error.errorFields) {
         console.log('表单验证失败:', error);
       } else {
-        message.error(editingCreative ? '广告创意更新失败' : '广告创意创建失败');
+        message.error(
+          editingCreative ? '广告创意更新失败' : '广告创意创建失败'
+        );
       }
     } finally {
       setLoading(false);
@@ -232,7 +232,13 @@ function AdCreativeManagement() {
       fixed: 'right',
       align: 'center',
       render: (_, record) => (
-        <div style={{ display: 'flex', justifyContent: 'space-between',width: '100%' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            width: '100%',
+          }}
+        >
           <Button
             type="link"
             size="small"
@@ -276,7 +282,7 @@ function AdCreativeManagement() {
           size="middle"
           style={{ width: 300, marginRight: 16 }}
           value={searchName}
-          onChange={(e) => setSearchName(e.target.value)}
+          onChange={e => setSearchName(e.target.value)}
           onSearch={handleSearch}
           onClear={handleSearchClear}
         />
@@ -323,9 +329,10 @@ function AdCreativeManagement() {
             name="status"
             label="开关状态"
             style={{ flex: 1 }}
+            initialValue={0}
             rules={[{ required: true, message: '请选择开关状态' }]}
           >
-            <Select defaultValue={0} placeholder="请选择开关状态">
+            <Select placeholder="请选择开关状态">
               <Option value={1}>开启</Option>
               <Option value={0}>关闭</Option>
             </Select>
@@ -340,7 +347,7 @@ function AdCreativeManagement() {
             <InputNumber
               style={{ width: '100%' }}
               placeholder="请输入计划日预算"
-              min={10}
+              min={0}
               precision={0}
               formatter={value =>
                 `¥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
@@ -349,15 +356,6 @@ function AdCreativeManagement() {
             />
           </Form.Item>
         </div>
-
-        <div style={{ marginTop: '24px', marginBottom: '16px' }}>
-          <h4
-            style={{ margin: '0 0 16px 0', color: '#262626', fontSize: '16px' }}
-          >
-            统计数据
-          </h4>
-        </div>
-
         <div style={{ display: 'flex', gap: '16px' }}>
           <Form.Item
             name="download_cost"
@@ -396,6 +394,14 @@ function AdCreativeManagement() {
           </Form.Item>
         </div>
 
+        <div style={{ marginTop: '24px', marginBottom: '16px' }}>
+          <h4
+            style={{ margin: '0 0 16px 0', color: '#262626', fontSize: '16px' }}
+          >
+            统计数据
+          </h4>
+        </div>
+
         <div style={{ display: 'flex', gap: '16px' }}>
           <Form.Item
             name="costs"
@@ -407,6 +413,7 @@ function AdCreativeManagement() {
               style={{ width: '100%' }}
               placeholder="请输入消耗金额"
               min={0}
+              disabled={isStatsReadOnly}
               precision={2}
               formatter={value =>
                 `¥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
@@ -575,7 +582,7 @@ function AdCreativeManagement() {
           contentStyle={{ color: '#262626' }}
         >
           <Descriptions.Item label="创意名称" span={2}>
-            {viewingCreative.name}
+            {`${viewingCreative.name} (ID:${viewingCreative.id})`}
           </Descriptions.Item>
           <Descriptions.Item label="Display ID">
             {viewingCreative.display_id}
@@ -594,34 +601,34 @@ function AdCreativeManagement() {
             </span>
           </Descriptions.Item>
           <Descriptions.Item label="计划日预算">
-            ¥{viewingCreative.budget.toLocaleString()}
+            ¥{viewingCreative?.budget?.toLocaleString()}
           </Descriptions.Item>
           <Descriptions.Item label="下载成本">
-            ¥{viewingCreative.download_cost.toFixed(2)}
+            ¥{viewingCreative?.download_cost?.toFixed(2)}
           </Descriptions.Item>
           <Descriptions.Item label="点击成本">
-            ¥{viewingCreative.click_cost.toFixed(2)}
+            ¥{viewingCreative?.click_cost?.toFixed(2)}
           </Descriptions.Item>
           <Descriptions.Item label="消耗金额">
-            ¥{viewingCreative.costs.toLocaleString()}
+            ¥{viewingCreative?.costs?.toLocaleString() || '-'}
           </Descriptions.Item>
           <Descriptions.Item label="ECPM">
-            ¥{viewingCreative.ecpm.toFixed(2)}
+            ¥{viewingCreative?.ecpm?.toFixed(2) || '-'}
           </Descriptions.Item>
           <Descriptions.Item label="曝光量">
-            {viewingCreative.display_count.toLocaleString()}
+            {viewingCreative?.display_count?.toLocaleString() || '-'}
           </Descriptions.Item>
           <Descriptions.Item label="点击量">
-            {viewingCreative.click_count.toLocaleString()}
+            {viewingCreative?.click_count?.toLocaleString() || '-'}
           </Descriptions.Item>
           <Descriptions.Item label="下载量">
-            {viewingCreative.download_count.toLocaleString()}
+            {viewingCreative?.download_count?.toLocaleString() || '-'}
           </Descriptions.Item>
           <Descriptions.Item label="点击率">
-            {viewingCreative.click_rate}%
+            {viewingCreative?.click_rate?.toFixed(2) || '-'}%
           </Descriptions.Item>
           <Descriptions.Item label="下载率">
-            {viewingCreative.download_rate}%
+            {viewingCreative?.download_rate?.toFixed(2) || '-'}%
           </Descriptions.Item>
           <Descriptions.Item label="创建时间">
             {dayjs(viewingCreative.created_at).format('YYYY-MM-DD HH:mm:ss')}

@@ -23,10 +23,18 @@ export {
 } from './adCreatives';
 
 // 用户管理相关API
-export { getUserList, updateUser, createUser } from './user';
+export { 
+  getUserList, 
+  updateUser, 
+  createUser,
+  getUserAccounts,
+  bindUserAccount,
+  unbindUserAccount,
+  updateUserAccountRole
+} from './user';
 
 // 账户相关API
-export { getAccountInfo, updateAccountInfo } from './account';
+export { getAccountInfo, updateAccountInfo, getAccountList } from './account';
 
 // 广告组相关API
 export {

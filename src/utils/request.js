@@ -55,6 +55,23 @@ request.interceptors.response.use(
     if (response.headers['X-New-Token']) {
       localStorage.setItem('token', response.headers['X-New-Token']);
     }
+    
+    // 检查用户是否被封禁
+    if (data.banned === true || (data.message && data.message.includes('封禁'))) {
+      logger.warn('User account is banned, forcing logout');
+      // 清除本地存储
+      localStorage.removeItem('token');
+      localStorage.removeItem('userInfo');
+      localStorage.removeItem('currentAccount');
+      // 显示封禁提示
+      window.dispatchEvent(new CustomEvent('popMsg', { detail: '您的账号已被封禁，请联系管理员' }));
+      // 强制跳转到登录页面
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 2000);
+      return Promise.reject(new Error('账号已被封禁'));
+    }
+    
     if (data.success) {
       return data.data;
     } else {

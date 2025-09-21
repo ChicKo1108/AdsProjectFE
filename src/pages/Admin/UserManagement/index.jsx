@@ -10,15 +10,27 @@ import {
   Tag,
   App,
 } from 'antd';
-import { PlusOutlined, SettingOutlined, KeyOutlined } from '@ant-design/icons';
-import { getUserList, updateUser, createUser } from '../../../apis';
-import { useUser } from '../../../contexts/UserContext';
+import {
+  PlusOutlined,
+  SettingOutlined,
+  KeyOutlined,
+  LinkOutlined,
+} from '@ant-design/icons';
+import {
+  getUserList,
+  updateUser,
+  createUser,
+  getUserAccounts,
+  bindUserAccount,
+  unbindUserAccount,
+  updateUserAccountRole,
+  getAccountList,
+} from '../../../apis';
 
 const { Option } = Select;
 
 function UserManagement() {
   const { message } = App.useApp();
-  const { currentAccount } = useUser();
 
   // ==================== 状态管理 ====================
   // 用户列表相关状态
@@ -42,15 +54,23 @@ function UserManagement() {
   const [resetPasswordUser, setResetPasswordUser] = useState(null);
   const [resetPasswordForm] = Form.useForm();
 
+  // 账户绑定弹窗状态
+  const [isAccountBindModalVisible, setIsAccountBindModalVisible] =
+    useState(false);
+  const [accountBindUser, setAccountBindUser] = useState(null);
+  const [userAccounts, setUserAccounts] = useState([]);
+  const [allAccounts, setAllAccounts] = useState([]);
+  const [accountBindForm] = Form.useForm();
+
   // ==================== 数据加载 ====================
   useEffect(() => {
     loadUsers();
-  }, [currentAccount]);
+  }, []);
 
   const loadUsers = async () => {
     try {
       setLoading(true);
-      const { users } = await getUserList(currentAccount?.id);
+      const users = await getUserList();
       setUsers(users);
     } catch (error) {
       message.error('加载用户列表失败');
@@ -140,6 +160,81 @@ function UserManagement() {
     resetPasswordForm.resetFields();
   };
 
+  // ==================== 账户绑定处理 ====================
+  const handleAccountBind = async record => {
+    try {
+      setAccountBindUser(record);
+
+      // 加载所有账户列表
+      const accounts = await getAccountList();
+      setAllAccounts(accounts || []);
+
+      // 加载用户已绑定的账户
+      const { accounts: userAccountsData } = await getUserAccounts(record.id);
+      setUserAccounts(userAccountsData || []);
+
+      setIsAccountBindModalVisible(true);
+    } catch (error) {
+      message.error('加载账户信息失败');
+    }
+  };
+
+  const handleAccountBindCancel = () => {
+    setIsAccountBindModalVisible(false);
+    setAccountBindUser(null);
+    setUserAccounts([]);
+    setAllAccounts([]);
+    accountBindForm.resetFields();
+  };
+
+  const handleBindAccount = async (accountId, role) => {
+    try {
+      await bindUserAccount(accountBindUser.id, { accountId, role });
+
+      // 重新加载用户已绑定的账户
+      const { accounts: userAccountsData } = await getUserAccounts(
+        accountBindUser.id
+      );
+      setUserAccounts(userAccountsData || []);
+
+      message.success('账户绑定成功');
+    } catch (error) {
+      message.error('账户绑定失败');
+    }
+  };
+
+  const handleUnbindAccount = async accountId => {
+    try {
+      await unbindUserAccount(accountBindUser.id, { accountId });
+
+      // 重新加载用户已绑定的账户
+      const { accounts: userAccountsData } = await getUserAccounts(
+        accountBindUser.id
+      );
+      setUserAccounts(userAccountsData || []);
+
+      message.success('账户解绑成功');
+    } catch (error) {
+      message.error('账户解绑失败');
+    }
+  };
+
+  const handleUpdateAccountRole = async (accountId, role) => {
+    try {
+      await updateUserAccountRole(accountBindUser.id, { accountId, role });
+
+      // 重新加载用户已绑定的账户
+      const { accounts: userAccountsData } = await getUserAccounts(
+        accountBindUser.id
+      );
+      setUserAccounts(userAccountsData || []);
+
+      message.success('权限更新成功');
+    } catch (error) {
+      message.error('权限更新失败');
+    }
+  };
+
   // ==================== 添加/编辑用户处理 ====================
   const handleAdd = () => {
     setEditingUser(null);
@@ -154,7 +249,7 @@ function UserManagement() {
 
       if (editingUser) {
         // 编辑用户
-        await updateUser(editingUser.id, values, currentAccount?.id);
+        await updateUser(editingUser.id, values);
         setUsers(
           users.map(user =>
             user.id === editingUser.id ? { ...user, ...values } : user
@@ -163,7 +258,7 @@ function UserManagement() {
         message.success('用户更新成功');
       } else {
         // 添加用户
-        const { user: newUser } = await createUser(values, currentAccount?.id);
+        const { user: newUser } = await createUser(values);
         setUsers([newUser, ...users]);
         message.success('用户创建成功');
       }
@@ -190,7 +285,6 @@ function UserManagement() {
   const getRoleConfig = role => {
     const roleConfigs = {
       'super-admin': { color: 'purple', text: '超级管理员' },
-      admin: { color: 'red', text: '管理员' },
       user: { color: 'blue', text: '普通用户' },
     };
     return roleConfigs[role] || { color: 'default', text: role };
@@ -207,16 +301,21 @@ function UserManagement() {
       title: '用户名',
       dataIndex: 'username',
       key: 'username',
+      minWidth: 100,
+      ellipsis: false,
     },
     {
       title: '昵称',
       dataIndex: 'name',
       key: 'name',
+      minWidth: 100,
+      ellipsis: true,
     },
     {
       title: '角色',
       dataIndex: 'role',
       key: 'role',
+      width: 100,
       render: role => {
         const config = getRoleConfig(role);
         return <Tag color={config.color}>{config.text}</Tag>;
@@ -226,6 +325,7 @@ function UserManagement() {
       title: '状态',
       dataIndex: 'ban',
       key: 'ban',
+      width: 100,
       render: ban => (
         <Tag color={ban ? 'red' : 'green'}>{ban ? '禁用' : '正常'}</Tag>
       ),
@@ -234,7 +334,7 @@ function UserManagement() {
       title: '操作',
       key: 'action',
       align: 'center',
-      width: 200,
+      width: 350,
       render: (_, record) => (
         <Space size="small">
           <Button
@@ -259,6 +359,14 @@ function UserManagement() {
             onClick={() => handleResetPassword(record)}
           >
             重置密码
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            icon={<LinkOutlined />}
+            onClick={() => handleAccountBind(record)}
+          >
+            账户绑定
           </Button>
         </Space>
       ),
@@ -312,7 +420,6 @@ function UserManagement() {
         >
           <Select placeholder="请选择角色">
             <Option value="super-admin">超级管理员</Option>
-            <Option value="admin">管理员</Option>
             <Option value="user">普通用户</Option>
           </Select>
         </Form.Item>
@@ -324,6 +431,134 @@ function UserManagement() {
           <Input.Password placeholder="请输入密码" />
         </Form.Item>
       </Form>
+    </Modal>
+  );
+
+  const renderAccountBindModal = () => (
+    <Modal
+      title={`账户绑定 - ${accountBindUser?.username || ''}`}
+      open={isAccountBindModalVisible}
+      onCancel={handleAccountBindCancel}
+      footer={null}
+      width={800}
+    >
+      <div style={{ marginBottom: 16 }}>
+        <h4>已绑定账户</h4>
+        {userAccounts.length > 0 ? (
+          <div style={{ marginBottom: 16 }}>
+            {userAccounts.map(account => (
+              <div
+                key={account.id}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '8px 12px',
+                  border: '1px solid #d9d9d9',
+                  borderRadius: '6px',
+                  marginBottom: '8px',
+                }}
+              >
+                <div>
+                  <span style={{ fontWeight: 'bold' }}>{account.name}</span>
+                  <span style={{ marginLeft: 8, color: '#666' }}>
+                    ({account.display_id})
+                  </span>
+                  <Tag
+                    color={
+                      account.user_role === 'site_admin' ? 'blue' : 'green'
+                    }
+                    style={{ marginLeft: 8 }}
+                  >
+                    {account.user_role === 'site_admin'
+                      ? '站点管理员'
+                      : '广告操作员'}
+                  </Tag>
+                </div>
+                <Space>
+                  <Select
+                    value={account.user_role}
+                    style={{ width: 120 }}
+                    onChange={role => handleUpdateAccountRole(account.id, role)}
+                  >
+                    <Option value="site_admin">站点管理员</Option>
+                    <Option value="ad_operator">广告操作员</Option>
+                  </Select>
+                  <Button
+                    type="link"
+                    danger
+                    onClick={() => handleUnbindAccount(account.id)}
+                  >
+                    解绑
+                  </Button>
+                </Space>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div style={{ color: '#999', marginBottom: 16 }}>暂无绑定账户</div>
+        )}
+      </div>
+
+      <div>
+        <h4>绑定新账户</h4>
+        <Form
+          form={accountBindForm}
+          layout="inline"
+          style={{ marginBottom: 16 }}
+        >
+          <Form.Item
+            name="accountId"
+            rules={[{ required: true, message: '请选择账户' }]}
+          >
+            <Select
+              placeholder="选择要绑定的账户"
+              style={{ width: 200 }}
+              showSearch
+              filterOption={(input, option) =>
+                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+            >
+              {allAccounts
+                .filter(account => {
+                  console.log(userAccounts);
+
+                  return !userAccounts?.some(ua => ua.id === account.id);
+                })
+                .map(account => (
+                  <Option key={account.id} value={account.id}>
+                    {account.name} ({account.display_id})
+                  </Option>
+                ))}
+            </Select>
+          </Form.Item>
+          <Form.Item
+            name="role"
+            rules={[{ required: true, message: '请选择权限' }]}
+          >
+            <Select placeholder="选择权限" style={{ width: 120 }}>
+              <Option value="site_admin">站点管理员</Option>
+              <Option value="ad_operator">广告操作员</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item>
+            <Button
+              type="primary"
+              onClick={async () => {
+                try {
+                  const values = await accountBindForm.validateFields();
+                  await handleBindAccount(values.accountId, values.role);
+                  accountBindForm.resetFields();
+                } catch (error) {
+                  console.log('表单验证失败:', error);
+                }
+              }}
+            >
+              绑定
+            </Button>
+          </Form.Item>
+        </Form>
+      </div>
     </Modal>
   );
 
@@ -344,7 +579,6 @@ function UserManagement() {
         >
           <Select placeholder="请选择用户权限">
             <Select.Option value="user">普通用户</Select.Option>
-            <Select.Option value="admin">管理员</Select.Option>
             <Select.Option value="super-admin">超级管理员</Select.Option>
           </Select>
         </Form.Item>
@@ -419,6 +653,7 @@ function UserManagement() {
       {renderUserModal()}
       {renderPermissionModal()}
       {renderResetPasswordModal()}
+      {renderAccountBindModal()}
     </div>
   );
 }

@@ -4,6 +4,7 @@ import Navigation from '../../components/Navigation';
 import { getAdCreativeList } from '../../apis';
 import { Button, Descriptions, Modal, Table, Input } from 'antd';
 import { AD_CREATIVES_TABLE_COLUMNS } from '../../utils/constants';
+import { useUser } from '../../contexts/UserContext';
 
 function AdCreativeList() {
   const [adCreatives, setAdCreatives] = useState([]);
@@ -16,6 +17,7 @@ function AdCreativeList() {
   const pageSize = 10;
   const [selectedAdCreative, setSelectedAdCreative] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const { currentAccount } = useUser();
 
   const handleSearch = () => {
     setCurrentPage(1);
@@ -23,7 +25,7 @@ function AdCreativeList() {
       page: currentPage,
       pageSize,
       name: search,
-    }).then(({ ad_creatives: adCreatives, pagination }) => {
+    }, currentAccount?.id).then(({ ad_creatives: adCreatives, pagination }) => {
       setAdCreatives(adCreatives);
       setPagination({
         page: pagination.page,
@@ -39,7 +41,7 @@ function AdCreativeList() {
       page: currentPage,
       pageSize,
       name: search,
-    }).then(({ ad_creatives: adCreatives, pagination }) => {
+    }, currentAccount?.id).then(({ ad_creatives: adCreatives, pagination }) => {
       setAdCreatives(adCreatives);
       setPagination({
         page: pagination.page,
@@ -48,7 +50,7 @@ function AdCreativeList() {
       });
       setLoading(false);
     });
-  }, [currentPage]);
+  }, [currentPage, currentAccount?.id]);
 
   return (
     <>
@@ -78,26 +80,7 @@ function AdCreativeList() {
             }}
             size="middle"
             scroll={{ x: 1200 }}
-            columns={[
-              ...AD_CREATIVES_TABLE_COLUMNS,
-              {
-                title: '操作',
-                dataIndex: 'operation',
-                key: 'operation',
-                width: 100,
-                fixed: 'right',
-                render: (_, record) => (
-                  <div>
-                    <Button type="link" size="small" onClick={() => {
-                      setSelectedAdCreative(record);
-                      setShowDetailModal(true);
-                    }}>
-                      详情
-                    </Button>
-                  </div>
-                ),
-              },
-            ]}
+            columns={AD_CREATIVES_TABLE_COLUMNS}
             />
           </div>
         </div>

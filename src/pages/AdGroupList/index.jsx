@@ -4,19 +4,21 @@ import Navigation from '../../components/Navigation';
 import { getAdGroups } from '../../apis';
 import { Collapse, Table } from 'antd';
 import { AD_PLAN_TABLE_COLUMNS } from '../../utils/constants';
+import { useUser } from '../../contexts/UserContext';
 
 function AdGroupList() {
   const [adGroups, setAdGroups] = useState([]);
   const [loading, setLoading] = useState(false);
+  const { currentAccount } = useUser();
 
   useEffect(() => {
-    getAdGroups().then(({ ad_groups: adGroups, pagination }) => {
+    getAdGroups(currentAccount?.id).then(({ ad_groups: adGroups, pagination }) => {
       setLoading(false);
       console.log(adGroups);
 
       setAdGroups(adGroups);
     });
-  }, []);
+  }, [currentAccount?.id]);
 
   return (
     <>

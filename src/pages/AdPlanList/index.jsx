@@ -5,6 +5,7 @@ import { Button, Input, Table } from 'antd';
 import { getAdPlanList } from '../../apis';
 import { AD_PLAN_TABLE_COLUMNS } from '../../utils/constants';
 import { Link } from 'react-router-dom';
+import { useUser } from '../../contexts/UserContext';
 
 function AdPlanList() {
   const [adPlans, setAdPlans] = useState([]);
@@ -15,6 +16,7 @@ function AdPlanList() {
     current: 1,
   });
   const pageSize = 10;
+  const { currentAccount } = useUser();
 
   const handleSearch = () => {
     setCurrentPage(1);
@@ -22,7 +24,7 @@ function AdPlanList() {
       page: currentPage,
       pageSize,
       name: search,
-    }).then(({ ad_plans: adPlans, pagination }) => {
+    }, currentAccount?.id).then(({ ad_plans: adPlans, pagination }) => {
       setAdPlans(adPlans);
       setPagination({
         page: pagination.page,
@@ -38,7 +40,7 @@ function AdPlanList() {
       page: currentPage,
       pageSize,
       name: search,
-    }).then(({ ad_plans: adPlans, pagination }) => {
+    }, currentAccount?.id).then(({ ad_plans: adPlans, pagination }) => {
       setAdPlans(adPlans);
       setPagination({
         page: pagination.page,
@@ -47,7 +49,7 @@ function AdPlanList() {
       });
       setLoading(false);
     });
-  }, [currentPage]);
+  }, [currentPage, currentAccount?.id]);
 
   return (
     <>

@@ -17,3 +17,10 @@ export const updateAccountInfo = async (data, accountId) => {
   
   return await request.put('/admin/account', requestData);
 };
+
+// 获取所有账户列表
+export const getAccountList = async () => {
+  const config = {};
+  
+  return await request.get('/admin/account/list', config);
+};

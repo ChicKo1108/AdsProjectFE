@@ -122,7 +122,7 @@ function AdPlanManagement() {
   const handleDelete = async id => {
     try {
       setLoading(true);
-      await deleteAdPlan(id);
+      await deleteAdPlan(id, currentAccount?.id);
       setAdPlans(adPlans.filter(plan => plan.id !== id));
       message.success('广告计划删除成功');
     } catch (error) {
@@ -144,7 +144,7 @@ function AdPlanManagement() {
 
       if (editingPlan) {
         // 编辑广告计划
-        await updateAdPlan(editingPlan.id, planData);
+        await updateAdPlan(editingPlan.id, planData, currentAccount?.id);
         setAdPlans(
           adPlans.map(plan =>
             plan.id === editingPlan.id ? { ...plan, ...planData } : plan
@@ -152,7 +152,7 @@ function AdPlanManagement() {
         );
         message.success('广告计划更新成功');
       } else {
-        const { ad_plan: newData } = await createAdPlan(planData);
+        const { ad_plan: newData } = await createAdPlan(planData, currentAccount?.id);
         setAdPlans([newData, ...adPlans]);
         message.success('广告计划创建成功');
       }

@@ -5,8 +5,7 @@ import {
   validateToken,
   getUserAccounts,
 } from '../apis/auth';
-import { config, logger } from '../config';
-import { USER_ROLE } from '../utils/constants';
+import { logger } from '../config';
 import { message } from 'antd';
 
 // 用户状态的初始值
@@ -295,9 +294,13 @@ export function UserProvider({ children }) {
           const userData = JSON.parse(savedUser);
 
           // 验证token是否有效
-          const tokenValidation = await validateToken().catch(() => ({
-            success: false,
-          }));
+          const tokenValidation = await validateToken().catch((error) => {
+            // 如果是封禁错误，不需要额外处理，响应拦截器已经处理了
+            if (error.message && error.message.includes('封禁')) {
+              return { success: false, banned: true };
+            }
+            return { success: false };
+          });
 
           if (tokenValidation.valid) {
             dispatch({
@@ -310,8 +313,12 @@ export function UserProvider({ children }) {
             // 恢复用户状态后加载账户列表
             await actions.loadUserAccounts();
           } else {
-            // Token无效，清除本地数据
-            logger.warn('Token无效，清除本地用户数据');
+            // Token无效或用户被封禁，清除本地数据
+            if (tokenValidation.banned) {
+              logger.warn('用户已被封禁，清除本地数据');
+            } else {
+              logger.warn('Token无效，清除本地用户数据');
+            }
             localStorage.removeItem('userInfo');
             localStorage.removeItem('token');
             localStorage.removeItem('currentAccount');

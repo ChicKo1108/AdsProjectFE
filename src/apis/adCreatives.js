@@ -42,5 +42,5 @@ export const deleteAdCreative = async (id, accountId) => {
     config.params = { accountId };
   }
 
-  return await request.delete(`/ad-creatives/${id}`, config);
+  return await request.delete(`/admin/ad-creatives/${id}`, config);
 };
