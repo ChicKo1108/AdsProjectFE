@@ -29,12 +29,14 @@ import {
 } from '../../../apis';
 import { useUser } from '../../../contexts/UserContext';
 import dayjs from 'dayjs';
+import useAuth from '../../../hooks/useAuth';
 
 const { Option } = Select;
 
 function AdCreativeManagement() {
   const { message } = App.useApp();
   const { currentAccount } = useUser();
+  const { isAccountAdmin } = useAuth();
 
   // 检查当前用户是否只能查看统计数据（ad_operator角色）
   const isStatsReadOnly = currentAccount?.user_role === 'ad_operator';
@@ -228,7 +230,7 @@ function AdCreativeManagement() {
     {
       title: '操作',
       key: 'action',
-      width: 200,
+      width: isAccountAdmin() ? 200 : 150,
       fixed: 'right',
       align: 'center',
       render: (_, record) => (
@@ -255,16 +257,18 @@ function AdCreativeManagement() {
           >
             编辑
           </Button>
-          <Popconfirm
-            title="确定要删除这个广告创意吗？"
-            onConfirm={() => handleDelete(record.id)}
-            okText="确定"
-            cancelText="取消"
-          >
-            <Button type="link" size="small" danger icon={<DeleteOutlined />}>
-              删除
-            </Button>
-          </Popconfirm>
+          {isAccountAdmin() && (
+            <Popconfirm
+              title="确定要删除这个广告创意吗？"
+              onConfirm={() => handleDelete(record.id)}
+              okText="确定"
+              cancelText="取消"
+            >
+              <Button type="link" size="small" danger icon={<DeleteOutlined />}>
+                删除
+              </Button>
+            </Popconfirm>
+          )}
         </div>
       ),
     },
@@ -356,197 +360,218 @@ function AdCreativeManagement() {
             />
           </Form.Item>
         </div>
-        <div style={{ display: 'flex', gap: '16px' }}>
-          <Form.Item
-            name="download_cost"
-            label="下载成本（元）"
-            style={{ flex: 1 }}
-            rules={[{ type: 'number', min: 0, message: '下载成本不能为负数' }]}
-          >
-            <InputNumber
-              style={{ width: '100%' }}
-              placeholder="请输入下载成本"
-              min={0}
-              precision={2}
-              formatter={value =>
-                `¥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-              }
-              parser={value => value.replace(/¥\s?|(,*)/g, '')}
-            />
-          </Form.Item>
 
-          <Form.Item
-            name="click_cost"
-            label="点击成本（元）"
-            style={{ flex: 1 }}
-            rules={[{ type: 'number', min: 0, message: '点击成本不能为负数' }]}
-          >
-            <InputNumber
-              style={{ width: '100%' }}
-              placeholder="请输入点击成本"
-              min={0}
-              precision={2}
-              formatter={value =>
-                `¥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-              }
-              parser={value => value.replace(/¥\s?|(,*)/g, '')}
-            />
-          </Form.Item>
-        </div>
+        {isAccountAdmin() && (
+          <div>
+            <div style={{ marginTop: '24px', marginBottom: '16px' }}>
+              <h4
+                style={{
+                  margin: '0 0 16px 0',
+                  color: '#262626',
+                  fontSize: '16px',
+                }}
+              >
+                统计数据
+              </h4>
+            </div>
 
-        <div style={{ marginTop: '24px', marginBottom: '16px' }}>
-          <h4
-            style={{ margin: '0 0 16px 0', color: '#262626', fontSize: '16px' }}
-          >
-            统计数据
-          </h4>
-        </div>
+            <div style={{ display: 'flex', gap: '16px' }}>
+              <Form.Item
+                name="download_cost"
+                label="下载成本（元）"
+                style={{ flex: 1 }}
+                rules={[
+                  { type: 'number', min: 0, message: '下载成本不能为负数' },
+                ]}
+              >
+                <InputNumber
+                  style={{ width: '100%' }}
+                  placeholder="请输入下载成本"
+                  min={0}
+                  precision={2}
+                  formatter={value =>
+                    `¥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                  }
+                  parser={value => value.replace(/¥\s?|(,*)/g, '')}
+                />
+              </Form.Item>
 
-        <div style={{ display: 'flex', gap: '16px' }}>
-          <Form.Item
-            name="costs"
-            label="消耗金额（元）"
-            style={{ flex: 1 }}
-            rules={[{ type: 'number', min: 0, message: '消耗金额不能为负数' }]}
-          >
-            <InputNumber
-              style={{ width: '100%' }}
-              placeholder="请输入消耗金额"
-              min={0}
-              disabled={isStatsReadOnly}
-              precision={2}
-              formatter={value =>
-                `¥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-              }
-              parser={value => value.replace(/¥\s?|(,*)/g, '')}
-            />
-          </Form.Item>
+              <Form.Item
+                name="click_cost"
+                label="点击成本（元）"
+                style={{ flex: 1 }}
+                rules={[
+                  { type: 'number', min: 0, message: '点击成本不能为负数' },
+                ]}
+              >
+                <InputNumber
+                  style={{ width: '100%' }}
+                  placeholder="请输入点击成本"
+                  min={0}
+                  precision={2}
+                  formatter={value =>
+                    `¥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                  }
+                  parser={value => value.replace(/¥\s?|(,*)/g, '')}
+                />
+              </Form.Item>
+            </div>
 
-          <Form.Item name="ecpm" label="ECPM" style={{ flex: 1 }}>
-            <InputNumber
-              style={{ width: '100%' }}
-              placeholder="请输入花费"
-              min={0}
-              precision={2}
-              disabled={isStatsReadOnly}
-              formatter={value =>
-                `¥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-              }
-              parser={value => value.replace(/¥\s?|(,*)/g, '')}
-            />
-          </Form.Item>
-        </div>
+            <div style={{ display: 'flex', gap: '16px' }}>
+              <Form.Item
+                name="costs"
+                label="消耗金额（元）"
+                style={{ flex: 1 }}
+                rules={[
+                  { type: 'number', min: 0, message: '消耗金额不能为负数' },
+                ]}
+              >
+                <InputNumber
+                  style={{ width: '100%' }}
+                  placeholder="请输入消耗金额"
+                  min={0}
+                  disabled={isStatsReadOnly}
+                  precision={2}
+                  formatter={value =>
+                    `¥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                  }
+                  parser={value => value.replace(/¥\s?|(,*)/g, '')}
+                />
+              </Form.Item>
 
-        <div style={{ display: 'flex', gap: '16px' }}>
-          <Form.Item
-            name="display_count"
-            label="曝光量"
-            style={{ flex: 1 }}
-            rules={[{ type: 'number', min: 0, message: '曝光量不能为负数' }]}
-          >
-            <InputNumber
-              style={{ width: '100%' }}
-              placeholder="请输入曝光量"
-              min={0}
-              precision={0}
-              disabled={isStatsReadOnly}
-              formatter={value =>
-                `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-              }
-              parser={value => value.replace(/(,*)/g, '')}
-            />
-          </Form.Item>
+              <Form.Item name="ecpm" label="ECPM" style={{ flex: 1 }}>
+                <InputNumber
+                  style={{ width: '100%' }}
+                  placeholder="请输入花费"
+                  min={0}
+                  precision={2}
+                  disabled={isStatsReadOnly}
+                  formatter={value =>
+                    `¥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                  }
+                  parser={value => value.replace(/¥\s?|(,*)/g, '')}
+                />
+              </Form.Item>
+            </div>
 
-          <Form.Item
-            name="click_count"
-            label="点击量"
-            style={{ flex: 1 }}
-            rules={[{ type: 'number', min: 0, message: '点击量不能为负数' }]}
-          >
-            <InputNumber
-              style={{ width: '100%' }}
-              placeholder="请输入点击量"
-              min={0}
-              precision={0}
-              disabled={isStatsReadOnly}
-              formatter={value =>
-                `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-              }
-              parser={value => value.replace(/(,*)/g, '')}
-            />
-          </Form.Item>
-        </div>
+            <div style={{ display: 'flex', gap: '16px' }}>
+              <Form.Item
+                name="display_count"
+                label="曝光量"
+                style={{ flex: 1 }}
+                rules={[
+                  { type: 'number', min: 0, message: '曝光量不能为负数' },
+                ]}
+              >
+                <InputNumber
+                  style={{ width: '100%' }}
+                  placeholder="请输入曝光量"
+                  min={0}
+                  precision={0}
+                  disabled={isStatsReadOnly}
+                  formatter={value =>
+                    `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                  }
+                  parser={value => value.replace(/(,*)/g, '')}
+                />
+              </Form.Item>
 
-        <div style={{ display: 'flex', gap: '16px' }}>
-          <Form.Item
-            name="download_count"
-            label="下载量"
-            style={{ flex: 1 }}
-            rules={[{ type: 'number', min: 0, message: '下载量不能为负数' }]}
-          >
-            <InputNumber
-              style={{ width: '100%' }}
-              placeholder="请输入下载量"
-              min={0}
-              precision={0}
-              disabled={isStatsReadOnly}
-              formatter={value =>
-                `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-              }
-              parser={value => value.replace(/(,*)/g, '')}
-            />
-          </Form.Item>
+              <Form.Item
+                name="click_count"
+                label="点击量"
+                style={{ flex: 1 }}
+                rules={[
+                  { type: 'number', min: 0, message: '点击量不能为负数' },
+                ]}
+              >
+                <InputNumber
+                  style={{ width: '100%' }}
+                  placeholder="请输入点击量"
+                  min={0}
+                  precision={0}
+                  disabled={isStatsReadOnly}
+                  formatter={value =>
+                    `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                  }
+                  parser={value => value.replace(/(,*)/g, '')}
+                />
+              </Form.Item>
+            </div>
 
-          <Form.Item
-            name="download_rate"
-            label="下载率（%）"
-            style={{ flex: 1 }}
-            rules={[
-              {
-                type: 'number',
-                min: 0,
-                max: 100,
-                message: '下载率应在0-100之间',
-              },
-            ]}
-          >
-            <InputNumber
-              style={{ width: '100%' }}
-              placeholder="请输入下载率"
-              min={0}
-              max={100}
-              precision={2}
-              disabled={isStatsReadOnly}
-              formatter={value => `${value}%`}
-              parser={value => value.replace('%', '')}
-            />
-          </Form.Item>
-        </div>
+            <div style={{ display: 'flex', gap: '16px' }}>
+              <Form.Item
+                name="download_count"
+                label="下载量"
+                style={{ flex: 1 }}
+                rules={[
+                  { type: 'number', min: 0, message: '下载量不能为负数' },
+                ]}
+              >
+                <InputNumber
+                  style={{ width: '100%' }}
+                  placeholder="请输入下载量"
+                  min={0}
+                  precision={0}
+                  disabled={isStatsReadOnly}
+                  formatter={value =>
+                    `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                  }
+                  parser={value => value.replace(/(,*)/g, '')}
+                />
+              </Form.Item>
 
-        <Form.Item
-          name="click_rate"
-          label="点击率（%）"
-          style={{ width: '50%' }}
-          rules={[
-            {
-              type: 'number',
-              min: 0,
-              max: 100,
-              message: '点击率应在0-100之间',
-            },
-          ]}
-        >
-          <InputNumber
-            style={{ width: '100%' }}
-            placeholder="请输入点击率"
-            min={0}
-            max={100}
-            precision={2}
-            disabled={isStatsReadOnly}
-            formatter={value => `${value}%`}
-            parser={value => value.replace('%', '')}
-          />
-        </Form.Item>
+              <Form.Item
+                name="download_rate"
+                label="下载率（%）"
+                style={{ flex: 1 }}
+                rules={[
+                  {
+                    type: 'number',
+                    min: 0,
+                    max: 100,
+                    message: '下载率应在0-100之间',
+                  },
+                ]}
+              >
+                <InputNumber
+                  style={{ width: '100%' }}
+                  placeholder="请输入下载率"
+                  min={0}
+                  max={100}
+                  precision={2}
+                  disabled={isStatsReadOnly}
+                  formatter={value => `${value}%`}
+                  parser={value => value.replace('%', '')}
+                />
+              </Form.Item>
+            </div>
+
+            <Form.Item
+              name="click_rate"
+              label="点击率（%）"
+              style={{ width: '50%' }}
+              rules={[
+                {
+                  type: 'number',
+                  min: 0,
+                  max: 100,
+                  message: '点击率应在0-100之间',
+                },
+              ]}
+            >
+              <InputNumber
+                style={{ width: '100%' }}
+                placeholder="请输入点击率"
+                min={0}
+                max={100}
+                precision={2}
+                disabled={isStatsReadOnly}
+                formatter={value => `${value}%`}
+                parser={value => value.replace('%', '')}
+              />
+            </Form.Item>
+          </div>
+        )}
       </Form>
     </Modal>
   );

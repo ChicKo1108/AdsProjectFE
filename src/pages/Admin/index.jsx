@@ -18,7 +18,7 @@ const { Option } = Select;
 function Admin() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAdmin, userInfo } = useAuth();
+  const { userInfo } = useAuth();
   const { accounts, currentAccount, switchAccount, accountsLoading } = useUser();
   
   // 根据当前路径确定选中的菜单项

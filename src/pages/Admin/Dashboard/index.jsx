@@ -23,11 +23,13 @@ import {
 import './Dashboard.css';
 import { getAccountInfo, updateAccountInfo } from '../../../apis';
 import { useUser } from '../../../contexts/UserContext';
+import useAuth from '../../../hooks/useAuth';
 
 function Dashboard() {
   const { message } = App.useApp();
   const { currentAccount } = useUser();
-  
+  const { isAccountAdmin } = useAuth();
+
   // ==================== 状态管理 ====================
   const [accountData, setAccountData] = useState({
     balance: 0,
@@ -37,40 +39,38 @@ function Dashboard() {
   const [loading, setLoading] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [form] = Form.useForm();
-  
+
   // ==================== 数据加载 ====================
   useEffect(() => {
     loadAccountData();
   }, [currentAccount?.id]);
-  
+
   const loadAccountData = async () => {
     try {
       setLoading(true);
-      
+
       const data = await getAccountInfo(currentAccount?.id);
       setAccountData(data);
-
     } catch (error) {
       message.error('加载账户数据失败');
     } finally {
       setLoading(false);
     }
   };
-  
+
   // ==================== 编辑处理 ====================
   const handleEdit = () => {
     form.setFieldsValue(accountData);
     setIsEditModalVisible(true);
   };
-  
+
   const handleSave = async () => {
     try {
       const values = await form.validateFields();
       setLoading(true);
-      
+
       await updateAccountInfo(values, currentAccount?.id);
-      
-      
+
       setAccountData(values);
       message.success('账户数据更新成功');
       setIsEditModalVisible(false);
@@ -84,12 +84,12 @@ function Dashboard() {
       setLoading(false);
     }
   };
-  
+
   const handleCancel = () => {
     setIsEditModalVisible(false);
     form.resetFields();
   };
-  
+
   // ==================== 渲染函数 ====================
   const renderStatisticCard = (title, value, prefix, suffix, icon, color) => (
     <Card className="statistic-card" hoverable>
@@ -106,7 +106,7 @@ function Dashboard() {
       </div>
     </Card>
   );
-  
+
   const renderEditModal = () => (
     <Modal
       title="编辑账户数据"
@@ -118,11 +118,7 @@ function Dashboard() {
       confirmLoading={loading}
       width={600}
     >
-      <Form
-        form={form}
-        layout="vertical"
-        name="accountForm"
-      >
+      <Form form={form} layout="vertical" name="accountForm">
         <Form.Item
           name="balance"
           label="账户余额（元）"
@@ -136,11 +132,13 @@ function Dashboard() {
             placeholder="请输入账户余额"
             precision={2}
             min={0}
-            formatter={value => `￥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            formatter={value =>
+              `￥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            }
             parser={value => value.replace(/￥\s?|(,*)/g, '')}
           />
         </Form.Item>
-        
+
         <Form.Item
           name="today_cost"
           label="今日广告消耗（元）"
@@ -154,13 +152,15 @@ function Dashboard() {
             placeholder="请输入今日广告消耗"
             precision={2}
             min={0}
-            formatter={value => `￥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            formatter={value =>
+              `￥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            }
             parser={value => value.replace(/￥\s?|(,*)/g, '')}
           />
         </Form.Item>
-        
+
         <Form.Item
-          name= "account_daily_budget"
+          name="account_daily_budget"
           label="账户日预算（元）"
           rules={[
             { required: true, message: '请输入账户日预算' },
@@ -172,28 +172,32 @@ function Dashboard() {
             placeholder="请输入账户日预算"
             precision={2}
             min={0}
-            formatter={value => `￥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            formatter={value =>
+              `￥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            }
             parser={value => value.replace(/￥\s?|(,*)/g, '')}
           />
         </Form.Item>
       </Form>
     </Modal>
   );
-  
+
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
         <h2>账户数据</h2>
-        <Button 
-          type="primary" 
-          icon={<EditOutlined />} 
-          onClick={handleEdit}
-          loading={loading}
-        >
-          编辑数据
-        </Button>
+        {isAccountAdmin() && (
+          <Button
+            type="primary"
+            icon={<EditOutlined />}
+            onClick={handleEdit}
+            loading={loading}
+          >
+            编辑数据
+          </Button>
+        )}
       </div>
-      
+
       <Row gutter={[32, 32]} justify="center" style={{ marginTop: '24px' }}>
         <Col xs={24} sm={12} lg={8}>
           {renderStatisticCard(
@@ -205,7 +209,7 @@ function Dashboard() {
             '#1890ff'
           )}
         </Col>
-        
+
         <Col xs={24} sm={12} lg={8}>
           {renderStatisticCard(
             '今日广告消耗',
@@ -216,7 +220,7 @@ function Dashboard() {
             '#f5222d'
           )}
         </Col>
-        
+
         <Col xs={24} sm={12} lg={8}>
           {renderStatisticCard(
             '账户日预算',
@@ -228,7 +232,7 @@ function Dashboard() {
           )}
         </Col>
       </Row>
-      
+
       {renderEditModal()}
     </div>
   );

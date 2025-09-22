@@ -1,5 +1,5 @@
 import { useUser } from '../contexts/UserContext';
-import { USER_ROLE } from '../utils/constants';
+import { ACCOUNT_ROLE, USER_ROLE } from '../utils/constants';
 
 /**
  * 认证相关的自定义Hook
@@ -16,6 +16,7 @@ export function useAuth() {
     updateUserInfo,
     clearError,
     initializeUser,
+    currentAccount,
   } = useUser();
 
   // 检查用户是否有特定权限
@@ -44,11 +45,13 @@ export function useAuth() {
   };
 
   // 检查用户是否为管理员
-  const isAdmin = () => {
+  const isAccountAdmin = () => {
+    console.log(currentAccount);
+    
     return (
       isLoggedIn &&
-      (userInfo.role === USER_ROLE.ADMIN ||
-        userInfo.role === USER_ROLE.SUPER_ADMIN)
+      (userInfo.role === USER_ROLE.SUPER_ADMIN ||
+        currentAccount?.user_role === ACCOUNT_ROLE.SITE_ADMIN)
     );
   };
 
@@ -78,7 +81,8 @@ export function useAuth() {
 
     // 工具函数
     hasPermission,
-    isAdmin,
+    isAccountAdmin,
+    isSuperAdmin,
     getDisplayName,
   };
 }

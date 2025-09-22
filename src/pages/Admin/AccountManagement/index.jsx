@@ -27,6 +27,7 @@ import {
   updateUserAccountRole,
 } from '../../../apis';
 import useAuth from '../../../hooks/useAuth';
+import { ACCOUNT_ROLE } from '../../../utils/constants';
 
 const { Option } = Select;
 
@@ -434,8 +435,8 @@ function AccountManagement() {
             rules={[{ required: true, message: '请选择角色' }]}
           >
             <Select placeholder="选择角色" style={{ width: 120 }}>
-              <Option value="site_admin">站点管理员</Option>
-              <Option value="ad_operator">广告操作员</Option>
+              <Option value={ACCOUNT_ROLE.SITE_ADMIN}>站点管理员</Option>
+              <Option value={ACCOUNT_ROLE.AD_OPERATOR}>广告操作员</Option>
             </Select>
           </Form.Item>
           <Form.Item>
@@ -471,11 +472,13 @@ function AccountManagement() {
                   )}
                   <Tag
                     color={
-                      user.account_role === 'site_admin' ? 'blue' : 'green'
+                      user.account_role === ACCOUNT_ROLE.SITE_ADMIN
+                        ? 'blue'
+                        : 'green'
                     }
                     style={{ marginLeft: 8 }}
                   >
-                    {user.account_role === 'site_admin'
+                    {user.account_role === ACCOUNT_ROLE.SITE_ADMIN
                       ? '站点管理员'
                       : '广告操作员'}
                   </Tag>
@@ -486,8 +489,8 @@ function AccountManagement() {
                     style={{ width: 120 }}
                     onChange={role => handleUpdateUserRole(user.id, role)}
                   >
-                    <Option value="site_admin">站点管理员</Option>
-                    <Option value="ad_operator">广告操作员</Option>
+                    <Option value={ACCOUNT_ROLE.SITE_ADMIN}>站点管理员</Option>
+                    <Option value={ACCOUNT_ROLE.AD_OPERATOR}>广告操作员</Option>
                   </Select>
                   <Button
                     type="link"

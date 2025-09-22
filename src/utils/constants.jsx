@@ -8,6 +8,11 @@ export const USER_ROLE = {
   USER: 'user',
 };
 
+export const ACCOUNT_ROLE = {
+  SITE_ADMIN: 'site_admin',
+  AD_OPERATOR: 'ad_operator',
+}
+
 const AD_PLAN_FIELDS = {
   TARGET: {
     app: '应用推广',
@@ -48,7 +53,8 @@ export const AD_PLAN_TABLE_COLUMNS = [
     title: '计划名称',
     dataIndex: 'name',
     key: 'name',
-    width: 150,
+    width: 200,
+    ellipsis: false,
     fixed: 'left',
   },
   {
