@@ -392,10 +392,7 @@ function AdPlanManagement() {
             name="budget"
             label="预算（元）"
             style={{ flex: 1 }}
-            rules={[
-              { required: true, message: '请输入预算' },
-              { type: 'number', min: 100, message: '预算不能少于100元' },
-            ]}
+            rules={[{ required: true, message: '请输入预算' }]}
           >
             <InputNumber
               style={{ width: '100%' }}
