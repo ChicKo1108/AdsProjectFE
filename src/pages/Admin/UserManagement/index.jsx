@@ -528,8 +528,6 @@ function UserManagement() {
             >
               {allAccounts
                 .filter(account => {
-                  console.log(userAccounts);
-
                   return !userAccounts?.some(ua => ua.id === account.id);
                 })
                 .map(account => (

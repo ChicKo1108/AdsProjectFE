@@ -25,8 +25,6 @@ function Home() {
     try {
       setLoading(true);
       const accountId = currentAccount?.id;
-      console.log(accountId);
-      
       const res = await getHomeInfo(accountId);
       setAccount(res.account);
       setAdPlans(res.adPlans);

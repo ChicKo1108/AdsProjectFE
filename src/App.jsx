@@ -29,7 +29,6 @@ function AppLayout() {
       setIsInitialized(true);
     };
     initialize();
-    console.log(ENV_VARS.APP_ENV);
     
   }, []); // 移除initializeUser依赖，只在组件挂载时执行一次
   

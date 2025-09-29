@@ -46,8 +46,6 @@ export function useAuth() {
 
   // 检查用户是否为管理员
   const isAccountAdmin = () => {
-    console.log(currentAccount);
-    
     return (
       isLoggedIn &&
       (userInfo.role === USER_ROLE.SUPER_ADMIN ||

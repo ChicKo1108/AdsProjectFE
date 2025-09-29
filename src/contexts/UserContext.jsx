@@ -203,7 +203,6 @@ export function UserProvider({ children }) {
       
       try {
         const accounts = await getUserAccounts();
-        console.log('加载用户账户列表:', accounts);
         
         dispatch({
           type: USER_ACTIONS.LOAD_ACCOUNTS_SUCCESS,
