@@ -327,8 +327,6 @@ function AdPlanManagement() {
           label="计划名称"
           rules={[
             { required: true, message: '请输入计划名称' },
-            { min: 2, message: '计划名称至少2个字符' },
-            { max: 50, message: '计划名称最多50个字符' },
           ]}
         >
           <Input placeholder="请输入广告计划名称" />
@@ -397,7 +395,6 @@ function AdPlanManagement() {
             <InputNumber
               style={{ width: '100%' }}
               placeholder="请输入预算"
-              min={100}
               precision={0}
               formatter={value =>
                 `¥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
@@ -413,8 +410,8 @@ function AdPlanManagement() {
             rules={[{ required: true, message: '请选择智能创意优选' }]}
           >
             <Select placeholder="请选择智能创意优选">
-              <Option value="1">开启</Option>
-              <Option value="0">关闭</Option>
+              <Option value={1}>开启</Option>
+              <Option value={0}>关闭</Option>
             </Select>
           </Form.Item>
         </div>
@@ -703,7 +700,7 @@ function AdPlanManagement() {
             </Tag>
           </Descriptions.Item>
           <Descriptions.Item label="智能创意优选">
-            {viewingPlan.chuang_yi_you_xuan ? '开' : '关'}
+            {viewingPlan.chuang_yi_you_xuan === 1 ? '开启' : '关闭'}
           </Descriptions.Item>
           <Descriptions.Item label="预算">
             ¥{viewingPlan.budget?.toLocaleString()}

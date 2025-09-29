@@ -14,8 +14,6 @@ function AdGroupList() {
   useEffect(() => {
     getAdGroups(currentAccount?.id).then(({ ad_groups: adGroups, pagination }) => {
       setLoading(false);
-      console.log(adGroups);
-
       setAdGroups(adGroups);
     });
   }, [currentAccount?.id]);

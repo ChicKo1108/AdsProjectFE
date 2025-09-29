@@ -604,7 +604,7 @@ function AdGroupManagement() {
             </Tag>
           </Descriptions.Item>
           <Descriptions.Item label="智能创意优选">
-            {viewingPlan.chuang_yi_you_xuan ? '开' : '关'}
+            {viewingPlan.chuang_yi_you_xuan === 1 ? '开启' : '关闭'}
           </Descriptions.Item>
           <Descriptions.Item label="预算">
             ¥{viewingPlan.budget?.toLocaleString() || 0}

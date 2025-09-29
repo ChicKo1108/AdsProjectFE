@@ -127,9 +127,9 @@ export const AD_PLAN_TABLE_COLUMNS = [
     width: 100,
     render: text =>
       text ? (
-        <Tag color={TAG_COLOR[text]}>开</Tag>
+        <Tag color={TAG_COLOR[text]}>开启</Tag>
       ) : (
-        <Tag color={TAG_COLOR[text]}>开</Tag>
+        <Tag color={TAG_COLOR[text]}>关闭</Tag>
       ),
   },
   {
